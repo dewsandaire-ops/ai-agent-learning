@@ -3,11 +3,10 @@ import os
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from openai import OpenAI
 from pydantic import BaseModel
 
-from openai import OpenAI
-
-from agent.brain import ask_ai
+from agent.brain import ask_ai  # noqa: I001
 
 
 load_dotenv()

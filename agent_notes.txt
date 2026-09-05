@@ -1,0 +1,3 @@
+The user wants to become an AI engineer.
+I am learning Python and AI agents.
+The user is learning Python and AI agents.
