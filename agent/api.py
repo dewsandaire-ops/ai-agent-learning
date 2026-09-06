@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from openai import OpenAI
 from pydantic import BaseModel
 
-from agent.brain import ask_ai  # noqa: I001
+from agent.brain import ask_ai
 
 
 load_dotenv()
@@ -18,7 +18,7 @@ if not api_key:
 
 client = OpenAI(api_key=api_key)
 
-app = FastAPI(title="Verified Agents and Homes AI")
+app = FastAPI(title="Business AI Assistant System")
 
 app.add_middleware(
     CORSMiddleware,
@@ -31,19 +31,24 @@ app.add_middleware(
 
 class ChatRequest(BaseModel):
     message: str
+    assistant: str = "venus"
 
 
 @app.get("/")
 def home():
     return {
         "status": "online",
-        "message": "Verified Agents and Homes AI is running."
+        "message": "Business AI Assistant System is running."
     }
 
 
 @app.post("/chat")
 def chat(request: ChatRequest):
-    answer = ask_ai(client, request.message)
+    answer = ask_ai(
+        client,
+        request.message,
+        request.assistant,
+    )
 
     return {
         "answer": answer
