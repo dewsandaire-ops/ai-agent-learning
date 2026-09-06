@@ -4,14 +4,12 @@ from tools.dews_aire_tool import (
     get_dews_aire_services,
     recommend_dews_aire_service,
 )
-
 from tools.jahz_hotel_tool import (
     create_jahz_hotel_enquiry,
     get_jahz_hotel_service,
     get_jahz_hotel_services,
     recommend_jahz_hotel_service,
 )
-
 from tools.movesmart_tool import (
     create_movesmart_followup,
     create_movesmart_protected_information_request,
@@ -22,7 +20,6 @@ from tools.movesmart_tool import (
     recommend_movesmart_category,
     request_movesmart_evidence,
 )
-
 from tools.verified_agents_and_homes import (
     find_lagos_location,
     get_agent_monthly_update,
@@ -123,3 +120,8 @@ TOOLS = {
 def get_tool(tool_name):
     """Return a registered tool by name."""
     return TOOLS.get(tool_name)
+
+
+def get_tools():
+    """Return all registered tools."""
+    return TOOLS

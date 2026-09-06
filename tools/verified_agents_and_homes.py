@@ -1,1011 +1,1468 @@
-# tools/verified_agents_and_homes.py
+# ============================================================
+# VERIFIED AGENTS AND HOMES
+# FAQ DATABASE
+# ============================================================
 
+PAYMENT_SAFETY_NOTICE = """
+Before making payment, guests, tenants, buyers, investors, and customers
+are encouraged to confirm the property or short-let address, booking details,
+applicable house rules, identification requirements, caution/security fee,
+cancellation terms, and the identity and authorization of the person
+receiving payment.
 
-COMPANY_NAME = "Verified Agents and Homes"
-COMPANY_TAGLINE = "Verify Before You Buy, Rent, Book, or Pay"
-
-
-COMPANY_DESCRIPTION = """
-Verified Agents and Homes is a property and real-estate verification
-service designed to help people make safer property and accommodation
-decisions.
-
-The service helps customers verify property documents, land documents,
-building approvals, real-estate agents, short-let addresses, short-let
-owners, and short-let managers before making transactions.
-
-The platform also keeps verification information that may be updated
-regularly. Customers should always check the latest information on the
-Verified Agents and Homes database/platform before making any payment
-or transaction.
+Verification by Verified Agents and Homes is intended to support due
+diligence and informed decision-making. Verification does not constitute
+an absolute guarantee against fraud, loss, ownership disputes, property
+defects, service failures, or future changes.
 """
 
 
-WHAT_WE_DO = [
-    "Land and house document search and verification",
-    "Property ownership document verification",
-    "Building approval verification",
-    "Property verification",
-    "Real-estate agent verification",
-    "Agent document verification",
-    "Short-let address verification",
-    "Short-let owner verification",
-    "Short-let manager verification",
-    "Monthly verification updates",
-    "Reporting and review of verification concerns",
-]
+# ============================================================
+# SHORT-LET HOUSE RULES
+# ============================================================
 
+SHORTLET_HOUSE_RULES = {
+    "identification": (
+        "A valid means of identification is required for guests. Accepted "
+        "identification may include a NIN-related valid ID, international "
+        "passport, driver's licence, or another valid government-issued ID, "
+        "subject to the property's requirements."
+    ),
 
-LAGOS_LOCATIONS = [
-    "Lagos Island",
-    "Victoria Island",
-    "Ikoyi",
-    "Lekki",
-    "Ajah",
-    "Sangotedo",
-    "Chevron",
-    "Ikate",
-    "Osapa",
-    "Yaba",
-    "Surulere",
-    "Ikeja",
-    "Maryland",
-    "Magodo",
-    "Gbagada",
-    "Festac",
-    "Badagry",
-    "Epe",
-    "Ibeju-Lekki",
-]
+    "check_in": (
+        "Standard check-in is from 2:00 p.m. Early check-in may be available "
+        "upon request and may attract an additional fee."
+    ),
 
+    "check_out": (
+        "Check-out is from 11:00 a.m. and no later than 12:00 noon, unless "
+        "otherwise stated by the property."
+    ),
 
-# -------------------------------------------------------------------
-# SAMPLE PROPERTY DATABASE
-# -------------------------------------------------------------------
-# These are sample records for development and testing.
-# They can later be replaced with the real database.
-# -------------------------------------------------------------------
+    "late_checkout": (
+        "Late check-out may be available subject to availability and may "
+        "attract a fee calculated according to the applicable property terms."
+    ),
 
-PROPERTIES = {
-    "VAH-001": {
-        "location": "Lekki, Lagos",
-        "lga": "Ibeju-Lekki",
-        "property_type": "Detached House",
-        "category": "House",
-        "property_status": "Verification Pending",
-        "owner_documents": {
-            "Deed of Assignment": "Submitted",
-        },
-        "land_documents": {
-            "Survey Plan": "Submitted",
-        },
-        "house_documents": {
-            "Approved Building Plan": "Submitted",
-        },
-        "building_approval": "Not Verified",
+    "smoking": (
+        "Indoor smoking is not permitted. A violation may result in "
+        "forfeiture of the caution/security deposit and additional charges "
+        "where applicable."
+    ),
+
+    "noise": (
+        "Loud music, excessive noise, and activities that disturb neighbours "
+        "or other residents are not permitted."
+    ),
+
+    "parties": (
+        "Parties and gatherings are strictly prohibited in apartments unless "
+        "the property has specifically been designated and approved for such "
+        "events. Guests requiring an event or get-together space should ask "
+        "for a suitable property."
+    ),
+
+    "occupancy": {
+        "studio": 2,
+        "1_bedroom": 2,
+        "2_bedroom": 4,
+        "3_bedroom": 6,
+        "4_bedroom": 8,
     },
-    "VAH-002": {
-        "location": "Ikoyi, Lagos",
-        "lga": "Eti-Osa",
-        "property_type": "Apartment",
-        "category": "House",
-        "property_status": "Verified",
-        "owner_documents": {
-            "Deed of Assignment": "Verified",
-            "Certificate of Occupancy (C of O)": "Verified",
-        },
-        "land_documents": {
-            "Survey Plan": "Verified",
-            "Certificate of Occupancy (C of O)": "Verified",
-        },
-        "house_documents": {
-            "Approved Building Plan": "Verified",
-        },
-        "building_approval": "Verified",
-    },
-    "VAH-003": {
-        "location": "Victoria Island, Lagos",
-        "lga": "Eti-Osa",
-        "property_type": "Terrace House",
-        "category": "House",
-        "property_status": "Verification Pending",
-        "owner_documents": {
-            "Deed of Assignment": "Submitted",
-        },
-        "land_documents": {
-            "Survey Plan": "Submitted",
-        },
-        "house_documents": {
-            "Approved Building Plan": "Pending",
-        },
-        "building_approval": "Pending",
-    },
-    "VAH-004": {
-        "location": "Badagry, Lagos",
-        "lga": "Badagry",
-        "property_type": "Detached House",
-        "category": "House",
-        "property_status": "Verification Pending",
-        "owner_documents": {
-            "Deed of Assignment": "Submitted",
-        },
-        "land_documents": {
-            "Survey Plan": "Submitted",
-            "Certificate of Occupancy (C of O)": "Submitted",
-        },
-        "house_documents": {
-            "Approved Building Plan": "Submitted",
-        },
-        "building_approval": "Pending",
-    },
+
+    "visitors": (
+        "Additional guests or visitors must comply with the property's "
+        "occupancy, security, identification, and estate rules. Guests should "
+        "obtain approval before bringing additional people into the property."
+    ),
+
+    "children": (
+        "Children may be permitted depending on the property. Parents or "
+        "guardians remain responsible for children's safety and children "
+        "must not be left unsupervised."
+    ),
+
+    "pets": (
+        "Pets are not permitted unless a property specifically states "
+        "otherwise."
+    ),
+
+    "furniture": (
+        "Guests should not move furniture or remove property items from their "
+        "designated locations without permission."
+    ),
+
+    "property_items": (
+        "Items belonging to the apartment, estate, or property must not be "
+        "taken outside the premises."
+    ),
+
+    "damage": (
+        "Guests should report damage as soon as it is noticed. Damage caused "
+        "by negligence or misuse may be deducted from the caution/security "
+        "deposit. Where the cost exceeds the deposit, the guest may be "
+        "required to pay the outstanding amount before checkout."
+    ),
+
+    "smart_card": (
+        "Loss of an estate or apartment smart card may attract a replacement "
+        "or administrative charge."
+    ),
+
+    "photoshoots": (
+        "Photoshoots, video shoots, content production, and other commercial "
+        "or professional productions may attract additional charges and "
+        "require prior approval."
+    ),
+
+    "lights_and_ac": (
+        "Guests should switch off lights, air conditioners, and electrical "
+        "equipment when leaving the apartment."
+    ),
+
+    "doors_and_windows": (
+        "Guests should close windows and securely lock the apartment door "
+        "when leaving the property."
+    ),
+
+    "parking": (
+        "Guests must comply with the parking rules and instructions of the "
+        "property or estate."
+    ),
+
+    "vehicle_horns": (
+        "Vehicle horns should not be used unnecessarily within the estate."
+    ),
+
+    "antisocial_behaviour": (
+        "Antisocial behaviour includes conduct that threatens, harasses, "
+        "disturbs, intimidates, damages property, or unreasonably interferes "
+        "with other residents or guests."
+    ),
+
+    "security": (
+        "Where provided by the property or estate, security may include "
+        "24-hour security personnel and CCTV surveillance."
+    ),
+
+    "pool": (
+        "Where a swimming pool is available, the usual operating period is "
+        "10:00 a.m. to 6:00 p.m., subject to the property's rules and "
+        "operating arrangements."
+    ),
+
+    "pool_safety": (
+        "Guests must follow all swimming-pool safety instructions and "
+        "children must be supervised by their parents or guardians."
+    ),
+
+    "housekeeping": (
+        "Housekeeping is generally provided every two days, usually between "
+        "9:00 a.m. and 2:00 p.m., or as otherwise required by the property."
+    ),
+
+    "daily_housekeeping": (
+        "Daily housekeeping may be available at an additional charge."
+    ),
+
+    "extension": (
+        "Guests who wish to extend their stay should provide at least "
+        "24 hours' notice. Extensions are subject to availability."
+    ),
+
+    "inventory": (
+        "A staff member or housekeeper may be present during check-in and "
+        "check-out to conduct a basic inventory and inspect the apartment."
+    ),
+
+    "deposit_refund": (
+        "The caution/security deposit is generally refunded after the "
+        "apartment has been cleaned and inspected, provided there are no "
+        "outstanding charges, damages, missing items, or applicable penalties."
+    ),
+
+    "rule_violations": (
+        "Violation of house or estate rules may result in forfeiture of the "
+        "caution/security deposit, additional charges, termination of the "
+        "stay, or other applicable estate penalties."
+    ),
+
+    "estate_fine": (
+        "Where applicable, an estate may impose a fine of up to ₦250,000 or "
+        "another estate-imposed penalty for serious rule violations. The "
+        "actual penalty depends on the applicable estate/property rules."
+    ),
 }
 
 
-# -------------------------------------------------------------------
-# SAMPLE AGENT DATABASE
-# -------------------------------------------------------------------
-# IMPORTANT:
-# Agent ID and VAH Verification Number are NOT the same thing.
-#
-# Agent ID:
-#   A permanent/internal identification reference for the agent.
-#
-# VAH Verification Number:
-#   A customer-facing verification number that changes every month.
-#
-# The numbers below are SAMPLE numbers for development.
-# They should be replaced by the actual numbers generated by the
-# Verified Agents and Homes database/platform.
-# -------------------------------------------------------------------
+# ============================================================
+# SHORT-LET FAQ
+# ============================================================
 
-AGENTS = {
-    "AG-001": {
-        "name": "John Adewale",
-        "phone": "08012345678",
-        "agency": "Adewale Properties",
-        "picture": "Recorded",
-        "verification_status": "Verified",
-        "identity_document": "Verified",
-        "license_status": "Verified",
-        "current_address": "Not yet recorded",
-        "address_update_status": "Update Required",
+SHORTLET_FAQ = [
 
-        "verification_number": "VAH-SAMPLE-001-2026-09",
-        "verification_number_status": "Current",
-        "verification_number_month": "2026-09",
-        "verification_number_update_frequency": "Monthly",
-
-        "monthly_update": {
-            "frequency": "Monthly",
-            "last_update": "Not yet recorded",
-            "next_update": "Monthly review required",
-        },
-
-        "reports": [],
-
-        "documents": {
-            "Government ID": "Verified",
-            "Real Estate License": "Verified",
-            "Agency Registration": "Verified",
-        },
+    {
+        "id": 1,
+        "category": "Short-let Booking",
+        "question": "How can I book a short-let apartment?",
+        "answer": (
+            "You can request a short-let by providing your preferred "
+            "location, dates, number of guests, apartment type, and other "
+            "requirements. Availability and booking terms depend on the "
+            "property or provider."
+        ),
+    },
+    {
+        "id": 2,
+        "category": "Short-let Booking",
+        "question": "How do I know if a short-let apartment is available?",
+        "answer": (
+            "Availability must be confirmed with the property or authorized "
+            "booking provider for your requested dates before payment."
+        ),
+    },
+    {
+        "id": 3,
+        "category": "Short-let Booking",
+        "question": "Can I book an apartment for one night?",
+        "answer": (
+            "Some apartments accept one-night bookings, while others have "
+            "minimum-stay requirements. Availability and minimum stay depend "
+            "on the property."
+        ),
+    },
+    {
+        "id": 4,
+        "category": "Short-let Booking",
+        "question": "What is the minimum stay required?",
+        "answer": (
+            "Minimum-stay requirements vary by apartment, provider, season, "
+            "and booking period. Confirm the applicable requirement before "
+            "payment."
+        ),
+    },
+    {
+        "id": 5,
+        "category": "Short-let Booking",
+        "question": "Can I extend my stay after checking in?",
+        "answer": SHORTLET_HOUSE_RULES["extension"],
+    },
+    {
+        "id": 6,
+        "category": "Short-let Booking",
+        "question": "How much notice is required to extend my stay?",
+        "answer": (
+            "At least 24 hours' notice is recommended and may be required. "
+            "Extensions remain subject to availability."
+        ),
+    },
+    {
+        "id": 7,
+        "category": "Check-in & Check-out",
+        "question": "Can I request an early check-in?",
+        "answer": (
+            "Yes. Early check-in may be requested, but it is subject to "
+            "availability and property approval."
+        ),
+    },
+    {
+        "id": 8,
+        "category": "Check-in & Check-out",
+        "question": "Is there a fee for early check-in?",
+        "answer": (
+            "An early check-in fee may apply depending on the property and "
+            "how early you wish to check in."
+        ),
+    },
+    {
+        "id": 9,
+        "category": "Check-in & Check-out",
+        "question": "What time is check-in?",
+        "answer": SHORTLET_HOUSE_RULES["check_in"],
+    },
+    {
+        "id": 10,
+        "category": "Check-in & Check-out",
+        "question": "What time is check-out?",
+        "answer": SHORTLET_HOUSE_RULES["check_out"],
+    },
+    {
+        "id": 11,
+        "category": "Check-in & Check-out",
+        "question": "Is late check-out allowed?",
+        "answer": SHORTLET_HOUSE_RULES["late_checkout"],
+    },
+    {
+        "id": 12,
+        "category": "Check-in & Check-out",
+        "question": "Is there a fee for late check-out?",
+        "answer": (
+            "Yes, a late check-out fee may apply, usually according to the "
+            "property's applicable hourly or fixed late-checkout charge."
+        ),
+    },
+    {
+        "id": 13,
+        "category": "Cancellation",
+        "question": "Can I cancel or change my booking?",
+        "answer": (
+            "Cancellation and modification terms vary by property and "
+            "provider. Always confirm the applicable cancellation policy "
+            "before making payment."
+        ),
+    },
+    {
+        "id": 14,
+        "category": "Cancellation",
+        "question": "What happens if I need to leave earlier than planned?",
+        "answer": (
+            "Early departure does not automatically entitle a guest to a "
+            "refund. Any refund depends on the property's cancellation and "
+            "early-departure policy."
+        ),
     },
 
-    "AG-002": {
-        "name": "Sarah Okafor",
-        "phone": "08023456789",
-        "agency": "Sarah Homes",
-        "picture": "Recorded",
-        "verification_status": "Verification Pending",
-        "identity_document": "Submitted",
-        "license_status": "Pending",
-        "current_address": "Not yet recorded",
-        "address_update_status": "Update Required",
+    # --------------------------------------------------------
+    # GUEST REQUIREMENTS
+    # --------------------------------------------------------
 
-        "verification_number": "VAH-SAMPLE-002-2026-09",
-        "verification_number_status": "Current",
-        "verification_number_month": "2026-09",
-        "verification_number_update_frequency": "Monthly",
-
-        "monthly_update": {
-            "frequency": "Monthly",
-            "last_update": "Not yet recorded",
-            "next_update": "Monthly review required",
-        },
-
-        "reports": [],
-
-        "documents": {
-            "Government ID": "Submitted",
-            "Real Estate License": "Pending",
-            "Agency Registration": "Submitted",
-        },
+    {
+        "id": 15,
+        "category": "Guest Requirements",
+        "question": "What identification is required when booking or checking in?",
+        "answer": SHORTLET_HOUSE_RULES["identification"],
+    },
+    {
+        "id": 16,
+        "category": "Guest Requirements",
+        "question": "What forms of identification are accepted?",
+        "answer": (
+            "Accepted identification may include a NIN-related valid ID, "
+            "international passport, driver's licence, or another valid "
+            "government-issued identification, subject to property rules."
+        ),
+    },
+    {
+        "id": 17,
+        "category": "Guest Requirements",
+        "question": "Do all guests need to provide identification?",
+        "answer": (
+            "The property or estate may require identification from all "
+            "guests or occupants. Confirm the specific requirement before "
+            "check-in."
+        ),
+    },
+    {
+        "id": 18,
+        "category": "Guest Requirements",
+        "question": "How many people can stay in the apartment?",
+        "answer": (
+            "The standard maximum occupancy is 2 guests for a Studio or "
+            "1-Bedroom, 4 guests for a 2-Bedroom, 6 guests for a 3-Bedroom, "
+            "and 8 guests for a 4-Bedroom, subject to the property's rules."
+        ),
+    },
+    {
+        "id": 19,
+        "category": "Guest Requirements",
+        "question": "Can I bring additional guests or visitors?",
+        "answer": SHORTLET_HOUSE_RULES["visitors"],
+    },
+    {
+        "id": 20,
+        "category": "Guest Requirements",
+        "question": "Can I host a party or gathering in the apartment?",
+        "answer": SHORTLET_HOUSE_RULES["parties"],
+    },
+    {
+        "id": 21,
+        "category": "Guest Requirements",
+        "question": "Are children allowed?",
+        "answer": SHORTLET_HOUSE_RULES["children"],
+    },
+    {
+        "id": 22,
+        "category": "Guest Requirements",
+        "question": "Are pets allowed?",
+        "answer": SHORTLET_HOUSE_RULES["pets"],
     },
 
-    "AG-003": {
-        "name": "David Williams",
-        "phone": "08034567890",
-        "agency": "Williams Realty",
-        "picture": "Recorded",
-        "verification_status": "Verified",
-        "identity_document": "Verified",
-        "license_status": "Verified",
-        "current_address": "Not yet recorded",
-        "address_update_status": "Update Required",
+    # --------------------------------------------------------
+    # HOUSE RULES
+    # --------------------------------------------------------
 
-        "verification_number": "VAH-SAMPLE-003-2026-09",
-        "verification_number_status": "Current",
-        "verification_number_month": "2026-09",
-        "verification_number_update_frequency": "Monthly",
-
-        "monthly_update": {
-            "frequency": "Monthly",
-            "last_update": "Not yet recorded",
-            "next_update": "Monthly review required",
-        },
-
-        "reports": [],
-
-        "documents": {
-            "Government ID": "Verified",
-            "Real Estate License": "Verified",
-            "Agency Registration": "Verified",
-        },
+    {
+        "id": 23,
+        "category": "House Rules",
+        "question": "Is smoking allowed?",
+        "answer": SHORTLET_HOUSE_RULES["smoking"],
     },
-}
-
-
-# -------------------------------------------------------------------
-# SAMPLE SHORT-LET DATABASE
-# -------------------------------------------------------------------
-
-SHORTLETS = {
-    "VAH-001": {
-        "property_id": "VAH-001",
-        "current_look": "Not yet recorded",
-        "current_look_status": "Update Required",
-        "last_update": "Not yet recorded",
-        "reported_issues": [],
-        "verification_status": "Verification Pending",
+    {
+        "id": 24,
+        "category": "House Rules",
+        "question": "Are parties or loud music allowed?",
+        "answer": (
+            "No. Parties and loud music are not permitted. Guests must avoid "
+            "excessive noise or activities that disturb neighbours."
+        ),
+    },
+    {
+        "id": 25,
+        "category": "House Rules",
+        "question": "Can I move furniture?",
+        "answer": SHORTLET_HOUSE_RULES["furniture"],
+    },
+    {
+        "id": 26,
+        "category": "House Rules",
+        "question": "Can I take items outside?",
+        "answer": SHORTLET_HOUSE_RULES["property_items"],
+    },
+    {
+        "id": 27,
+        "category": "House Rules",
+        "question": "What if I damage something?",
+        "answer": SHORTLET_HOUSE_RULES["damage"],
+    },
+    {
+        "id": 28,
+        "category": "House Rules",
+        "question": "What if I lose the smart card or property?",
+        "answer": SHORTLET_HOUSE_RULES["smart_card"],
+    },
+    {
+        "id": 29,
+        "category": "House Rules",
+        "question": "Are photoshoots or video productions allowed?",
+        "answer": SHORTLET_HOUSE_RULES["photoshoots"],
+    },
+    {
+        "id": 30,
+        "category": "House Rules",
+        "question": "Are there extra charges?",
+        "answer": (
+            "Additional charges may apply for services or activities such as "
+            "early check-in, late check-out, daily housekeeping, approved "
+            "photoshoots/video productions, damages, lost smart cards, or "
+            "other property-specific services."
+        ),
+    },
+    {
+        "id": 31,
+        "category": "House Rules",
+        "question": "What happens if I violate the rules?",
+        "answer": SHORTLET_HOUSE_RULES["rule_violations"],
+    },
+    {
+        "id": 32,
+        "category": "House Rules",
+        "question": "Can a guest be asked to leave?",
+        "answer": (
+            "Yes. Serious or repeated violations of apartment or estate "
+            "rules may result in termination of the stay and the guest being "
+            "required to leave, subject to the applicable terms."
+        ),
+    },
+    {
+        "id": 33,
+        "category": "House Rules",
+        "question": "Are estate rules required?",
+        "answer": (
+            "Yes. Where an apartment is located within an estate, guests are "
+            "required to comply with applicable estate rules in addition to "
+            "the apartment's house rules."
+        ),
+    },
+    {
+        "id": 34,
+        "category": "House Rules",
+        "question": "Are vehicle horns allowed?",
+        "answer": SHORTLET_HOUSE_RULES["vehicle_horns"],
+    },
+    {
+        "id": 35,
+        "category": "House Rules",
+        "question": "What is antisocial behaviour?",
+        "answer": SHORTLET_HOUSE_RULES["antisocial_behaviour"],
     },
 
-    "VAH-002": {
-        "property_id": "VAH-002",
-        "current_look": "Not yet recorded",
-        "current_look_status": "Update Required",
-        "last_update": "Not yet recorded",
-        "reported_issues": [],
-        "verification_status": "Verified",
+    # --------------------------------------------------------
+    # SECURITY
+    # --------------------------------------------------------
+
+    {
+        "id": 36,
+        "category": "Security",
+        "question": "Is the apartment or estate secured?",
+        "answer": SHORTLET_HOUSE_RULES["security"],
+    },
+    {
+        "id": 37,
+        "category": "Security",
+        "question": "Is there 24/7 security?",
+        "answer": (
+            "Where provided, estates may have 24/7 security personnel. "
+            "Guests should confirm the specific security arrangements of "
+            "the property before booking."
+        ),
+    },
+    {
+        "id": 38,
+        "category": "Security",
+        "question": "Does the property have CCTV?",
+        "answer": (
+            "CCTV may be available in common or estate areas where provided. "
+            "Coverage varies by property."
+        ),
+    },
+    {
+        "id": 39,
+        "category": "Parking",
+        "question": "Is parking available?",
+        "answer": (
+            "Parking availability depends on the property or estate. "
+            "Guests should confirm parking arrangements before booking."
+        ),
+    },
+    {
+        "id": 40,
+        "category": "Parking",
+        "question": "What are the parking rules?",
+        "answer": (
+            "Guests must follow all parking instructions provided by the "
+            "property or estate, including designated parking spaces and "
+            "security requirements."
+        ),
+    },
+    {
+        "id": 41,
+        "category": "Security",
+        "question": "What if I notice damage on arrival?",
+        "answer": (
+            "Report it to the host, manager, or designated property contact "
+            "as soon as possible, preferably before using the affected item "
+            "or area."
+        ),
+    },
+    {
+        "id": 42,
+        "category": "Security",
+        "question": "Who is responsible for children?",
+        "answer": (
+            "Parents or guardians are responsible for supervising children "
+            "and ensuring their safety throughout the stay."
+        ),
     },
 
-    "VAH-003": {
-        "property_id": "VAH-003",
-        "current_look": "Not yet recorded",
-        "current_look_status": "Update Required",
-        "last_update": "Not yet recorded",
-        "reported_issues": [],
-        "verification_status": "Verification Pending",
+    # --------------------------------------------------------
+    # CAUTION / SECURITY DEPOSIT
+    # --------------------------------------------------------
+
+    {
+        "id": 43,
+        "category": "Caution Fee",
+        "question": "Is a caution or security deposit required?",
+        "answer": (
+            "Some properties require a refundable caution/security deposit. "
+            "The amount and conditions vary by property."
+        ),
+    },
+    {
+        "id": 44,
+        "category": "Caution Fee",
+        "question": "When is the caution deposit paid?",
+        "answer": (
+            "Where required, the caution/security deposit is normally paid "
+            "before or at check-in according to the property's booking terms."
+        ),
+    },
+    {
+        "id": 45,
+        "category": "Caution Fee",
+        "question": "When is the caution deposit refunded?",
+        "answer": SHORTLET_HOUSE_RULES["deposit_refund"],
+    },
+    {
+        "id": 46,
+        "category": "Caution Fee",
+        "question": "What can be deducted from the deposit?",
+        "answer": (
+            "Applicable deductions may include damage, missing items, lost "
+            "smart cards, excessive cleaning, unpaid charges, or penalties "
+            "arising from applicable house or estate rules."
+        ),
+    },
+    {
+        "id": 47,
+        "category": "Caution Fee",
+        "question": "What if damage exceeds the deposit?",
+        "answer": (
+            "If verified damage or other outstanding charges exceed the "
+            "caution/security deposit, the guest may be required to pay the "
+            "remaining balance."
+        ),
+    },
+    {
+        "id": 48,
+        "category": "Caution Fee",
+        "question": "Can the deposit be forfeited for rule violations?",
+        "answer": (
+            "Yes. Where permitted by the applicable terms, serious house or "
+            "estate-rule violations may result in partial or full forfeiture "
+            "of the caution/security deposit."
+        ),
     },
 
-    "VAH-004": {
-        "property_id": "VAH-004",
-        "current_look": "Not yet recorded",
-        "current_look_status": "Update Required",
-        "last_update": "Not yet recorded",
-        "reported_issues": [],
-        "verification_status": "Verification Pending",
+    # --------------------------------------------------------
+    # HOUSEKEEPING / FACILITIES
+    # --------------------------------------------------------
+
+    {
+        "id": 49,
+        "category": "Housekeeping",
+        "question": "How often is housekeeping provided?",
+        "answer": SHORTLET_HOUSE_RULES["housekeeping"],
     },
-}
-
-
-VERIFICATION_STATUSES = [
-    "Submitted",
-    "Pending",
-    "Verified",
-    "Not Verified",
-    "Reported",
-    "Under Review",
-    "Confirmed",
+    {
+        "id": 50,
+        "category": "Housekeeping",
+        "question": "Is daily housekeeping available?",
+        "answer": (
+            "Daily housekeeping may be available depending on the property."
+        ),
+    },
+    {
+        "id": 51,
+        "category": "Housekeeping",
+        "question": "Is there an additional charge for daily housekeeping?",
+        "answer": SHORTLET_HOUSE_RULES["daily_housekeeping"],
+    },
+    {
+        "id": 52,
+        "category": "Housekeeping",
+        "question": "What time does housekeeping take place?",
+        "answer": (
+            "Housekeeping is generally carried out between 9:00 a.m. and "
+            "2:00 p.m., subject to the property's arrangements."
+        ),
+    },
+    {
+        "id": 53,
+        "category": "Facilities",
+        "question": "Is there a swimming pool?",
+        "answer": (
+            "Some properties have swimming pools. Availability must be "
+            "confirmed for the specific apartment."
+        ),
+    },
+    {
+        "id": 54,
+        "category": "Facilities",
+        "question": "What are the swimming pool operating hours?",
+        "answer": SHORTLET_HOUSE_RULES["pool"],
+    },
+    {
+        "id": 55,
+        "category": "Facilities",
+        "question": "What are the swimming pool safety rules?",
+        "answer": SHORTLET_HOUSE_RULES["pool_safety"],
+    },
+    {
+        "id": 56,
+        "category": "Guest Support",
+        "question": "Who can assist me during my stay?",
+        "answer": (
+            "Guests should use the contact provided by the host, manager, "
+            "booking provider, or property representative for assistance "
+            "during their stay."
+        ),
+    },
 ]
 
 
-# -------------------------------------------------------------------
-# HELPER FUNCTIONS
-# -------------------------------------------------------------------
-
-def find_lagos_location(location):
-    """Check whether a location is listed in the Lagos service area."""
-
-    if not location:
-        return "Please provide a location."
-
-    location_lower = location.lower()
-
-    matches = [
-        area
-        for area in LAGOS_LOCATIONS
-        if area.lower() in location_lower
-    ]
-
-    if matches:
-        return (
-            f"Location found in Lagos service area: "
-            f"{', '.join(matches)}"
-        )
-
-    return (
-        f"No exact match was found for '{location}'. "
-        "Please provide a more specific Lagos location."
-    )
-
-
-def _property_exists(property_id):
-    """Check whether a property exists."""
-
-    return property_id in PROPERTIES
-
-
-def _format_documents(documents):
-    """Format a document dictionary for display."""
-
-    if not documents:
-        return "No documents recorded."
-
-    return "\n".join(
-        f"- {name}: {status}"
-        for name, status in documents.items()
-    )
-
-
-def _format_document_status(documents):
-    """Return a simple document status summary."""
-
-    if not documents:
-        return "No documents recorded."
-
-    statuses = list(documents.values())
-
-    if all(status == "Verified" for status in statuses):
-        return "All recorded documents are Verified."
-
-    return "Some documents are still pending verification."
-
-
-# -------------------------------------------------------------------
-# COMPANY INFORMATION
-# -------------------------------------------------------------------
-
-def get_company_information():
-    """Return general information about Verified Agents and Homes."""
-
-    return (
-        f"{COMPANY_NAME}\n"
-        f"{COMPANY_TAGLINE}\n\n"
-        f"{COMPANY_DESCRIPTION}\n\n"
-        "Core Services:\n"
-        + "\n".join(f"- {service}" for service in WHAT_WE_DO)
-        + "\n\n"
-        "Important Safety Rule:\n"
-        "Always check the current information on the Verified Agents "
-        "and Homes database/platform immediately before making a "
-        "transaction."
-    )
-
-
-def get_company_services():
-    """Return the company's services."""
-
-    return (
-        f"{COMPANY_NAME} Services:\n\n"
-        + "\n".join(f"- {service}" for service in WHAT_WE_DO)
-    )
-
-
-def get_company_mission():
-    """Return the company mission."""
-
-    return (
-        "Our mission is to help people make safer and more informed "
-        "property and accommodation decisions by providing reliable "
-        "verification services."
-    )
-
-
-def get_company_vision():
-    """Return the company vision."""
-
-    return (
-        "Our vision is to build a trusted verification platform where "
-        "people can check property, agent, owner, manager, address, "
-        "and document information before making real-estate transactions."
-    )
-
-
-def get_company_values():
-    """Return the company's core values."""
-
-    return (
-        "Core Values:\n"
-        "- Verification\n"
-        "- Transparency\n"
-        "- Trust\n"
-        "- Accountability\n"
-        "- Safety\n"
-        "- Accuracy\n"
-        "- Customer Protection"
-    )
-
-
-def get_company_story():
-    """Return a short company story."""
-
-    return (
-        "Verified Agents and Homes was created to help reduce the risks "
-        "people face when buying, renting, booking, or dealing with "
-        "property agents. The service focuses on verification before "
-        "customers commit their money."
-    )
-
-
-def get_company_commitment():
-    """Return the company's customer commitment."""
-
-    return (
-        "Verified Agents and Homes is committed to encouraging customers "
-        "to verify information before making financial commitments. "
-        "Customers should always check the latest database update and "
-        "current VAH Verification Number before transacting with an agent."
-    )
-
-
-# -------------------------------------------------------------------
-# PROPERTY FUNCTIONS
-# -------------------------------------------------------------------
-
-def search_property(property_id):
-    """Search for a property using its property ID."""
-
-    property_data = PROPERTIES.get(property_id)
-
-    if property_data is None:
-        return f"No property was found with ID '{property_id}'."
-
-    return (
-        f"Property ID: {property_id}\n"
-        f"Location: {property_data['location']}\n"
-        f"LGA: {property_data['lga']}\n"
-        f"Property Type: {property_data['property_type']}\n"
-        f"Category: {property_data['category']}\n"
-        f"Property Status: {property_data['property_status']}\n"
-        f"Building Approval: {property_data['building_approval']}"
-    )
-
-
-def verify_property(property_id):
-    """Return the current verification status of a property."""
-
-    property_data = PROPERTIES.get(property_id)
-
-    if property_data is None:
-        return f"No property was found with ID '{property_id}'."
-
-    return (
-        f"Property Verification\n"
-        f"Property ID: {property_id}\n"
-        f"Location: {property_data['location']}\n"
-        f"Property Type: {property_data['property_type']}\n"
-        f"Verification Status: "
-        f"{property_data['property_status']}\n"
-        f"Building Approval: {property_data['building_approval']}\n\n"
-        "Always confirm the latest verification status on the "
-        "Verified Agents and Homes database before making payment."
-    )
-
-
-def search_property_documents(property_id):
-    """Search all recorded documents for a property."""
-
-    property_data = PROPERTIES.get(property_id)
-
-    if property_data is None:
-        return f"No property was found with ID '{property_id}'."
-
-    return (
-        f"Property Documents\n"
-        f"Property ID: {property_id}\n\n"
-        "Owner Documents:\n"
-        f"{_format_documents(property_data['owner_documents'])}\n\n"
-        "Land Documents:\n"
-        f"{_format_documents(property_data['land_documents'])}\n\n"
-        "House Documents:\n"
-        f"{_format_documents(property_data['house_documents'])}"
-    )
-
-
-def verify_property_documents(property_id):
-    """Return a summary of property document verification."""
-
-    property_data = PROPERTIES.get(property_id)
-
-    if property_data is None:
-        return f"No property was found with ID '{property_id}'."
-
-    all_documents = {}
-
-    all_documents.update(property_data["owner_documents"])
-    all_documents.update(property_data["land_documents"])
-    all_documents.update(property_data["house_documents"])
-
-    return (
-        f"Property Document Verification\n"
-        f"Property ID: {property_id}\n"
-        f"Overall Status: "
-        f"{_format_document_status(all_documents)}\n\n"
-        "Owner Documents:\n"
-        f"{_format_documents(property_data['owner_documents'])}\n\n"
-        "Land Documents:\n"
-        f"{_format_documents(property_data['land_documents'])}\n\n"
-        "House Documents:\n"
-        f"{_format_documents(property_data['house_documents'])}"
-    )
-
-
-def search_land_documents(property_id):
-    """Search land documents for a property."""
-
-    property_data = PROPERTIES.get(property_id)
-
-    if property_data is None:
-        return f"No property was found with ID '{property_id}'."
-
-    return (
-        f"Land Documents for {property_id}\n\n"
-        f"{_format_documents(property_data['land_documents'])}"
-    )
-
-
-def verify_land_documents(property_id):
-    """Verify the recorded land documents for a property."""
-
-    property_data = PROPERTIES.get(property_id)
-
-    if property_data is None:
-        return f"No property was found with ID '{property_id}'."
-
-    status = _format_document_status(
-        property_data["land_documents"]
-    )
-
-    return (
-        f"Land Document Verification\n"
-        f"Property ID: {property_id}\n"
-        f"Status: {status}\n\n"
-        f"{_format_documents(property_data['land_documents'])}"
-    )
-
-
-def search_house_documents(property_id):
-    """Search house documents for a property."""
-
-    property_data = PROPERTIES.get(property_id)
-
-    if property_data is None:
-        return f"No property was found with ID '{property_id}'."
-
-    return (
-        f"House Documents for {property_id}\n\n"
-        f"{_format_documents(property_data['house_documents'])}"
-    )
-
-
-def verify_house_documents(property_id):
-    """Verify house documents for a property."""
-
-    property_data = PROPERTIES.get(property_id)
-
-    if property_data is None:
-        return f"No property was found with ID '{property_id}'."
-
-    status = _format_document_status(
-        property_data["house_documents"]
-    )
-
-    return (
-        f"House Document Verification\n"
-        f"Property ID: {property_id}\n"
-        f"Status: {status}\n\n"
-        f"{_format_documents(property_data['house_documents'])}"
-    )
-
-
-def search_location(location):
-    """Search whether a location is within the Lagos service area."""
-
-    return find_lagos_location(location)
-
-
-# -------------------------------------------------------------------
-# SHORT-LET FUNCTIONS
-# -------------------------------------------------------------------
-
-def verify_shortlet_address(property_id):
-    """Verify a short-let address using the property database."""
-
-    property_data = PROPERTIES.get(property_id)
-
-    if property_data is None:
-        return f"No property was found with ID '{property_id}'."
-
-    shortlet_data = SHORTLETS.get(property_id)
-
-    if shortlet_data is None:
-        return (
-            f"No short-let record was found for property "
-            f"'{property_id}'."
-        )
-
-    return (
-        f"Short-let Address Verification\n"
-        f"Property ID: {property_id}\n"
-        f"Address/Location: {property_data['location']}\n"
-        f"LGA: {property_data['lga']}\n"
-        f"Current Status: {shortlet_data['verification_status']}\n"
-        f"Current Look Status: "
-        f"{shortlet_data['current_look_status']}\n\n"
-        "Confirm the latest address information before booking "
-        "or making payment."
-    )
-
-
-def verify_shortlet_owner(property_id):
-    """Return short-let owner verification information."""
-
-    property_data = PROPERTIES.get(property_id)
-
-    if property_data is None:
-        return f"No property was found with ID '{property_id}'."
-
-    return (
-        f"Short-let Owner Verification\n"
-        f"Property ID: {property_id}\n"
-        f"Location: {property_data['location']}\n"
-        f"Property Status: {property_data['property_status']}\n\n"
-        "Owner verification must be confirmed using the latest "
-        "Verified Agents and Homes database information before payment."
-    )
-
-
-def verify_shortlet_manager(property_id):
-    """Return short-let manager verification information."""
-
-    property_data = PROPERTIES.get(property_id)
-
-    if property_data is None:
-        return f"No property was found with ID '{property_id}'."
-
-    return (
-        f"Short-let Manager Verification\n"
-        f"Property ID: {property_id}\n"
-        f"Location: {property_data['location']}\n"
-        f"Property Status: {property_data['property_status']}\n\n"
-        "Manager information should be confirmed through the latest "
-        "Verified Agents and Homes database before booking or payment."
-    )
-
-
-# -------------------------------------------------------------------
-# AGENT FUNCTIONS
-# -------------------------------------------------------------------
-
-def search_agent(agent_id):
-    """Search for an agent using Agent ID."""
-
-    agent_data = AGENTS.get(agent_id)
-
-    if agent_data is None:
-        return f"No agent was found with ID '{agent_id}'."
-
-    return (
-        f"Agent ID: {agent_id}\n"
-        f"Name: {agent_data['name']}\n"
-        f"Phone: {agent_data['phone']}\n"
-        f"Agency: {agent_data['agency']}\n"
-        f"Picture: {agent_data['picture']}\n"
-        f"Verification Status: {agent_data['verification_status']}\n"
-        f"VAH Verification Number: "
-        f"{agent_data['verification_number']}\n"
-        f"Verification Number Status: "
-        f"{agent_data['verification_number_status']}\n"
-        f"Verification Number Month: "
-        f"{agent_data['verification_number_month']}"
-    )
-
-
-def search_agent_by_name(name):
-    """Search for an agent by name."""
-
-    if not name:
-        return "Please provide the agent's name."
-
-    name_lower = name.lower()
-
-    matches = []
-
-    for agent_id, agent_data in AGENTS.items():
-        if name_lower in agent_data["name"].lower():
-            matches.append(
-                f"Agent ID: {agent_id}\n"
-                f"Name: {agent_data['name']}\n"
-                f"Agency: {agent_data['agency']}\n"
-                f"Phone: {agent_data['phone']}\n"
-                f"Verification Status: "
-                f"{agent_data['verification_status']}\n"
-                f"VAH Verification Number: "
-                f"{agent_data['verification_number']}\n"
-            )
-
-    if not matches:
-        return f"No agent was found matching '{name}'."
-
-    return "\n".join(matches)
-
-
-def verify_agent(agent_id):
-    """Verify an agent and show current verification information."""
-
-    agent_data = AGENTS.get(agent_id)
-
-    if agent_data is None:
-        return f"No agent was found with ID '{agent_id}'."
-
-    return (
-        f"Agent Verification\n"
-        f"Agent ID: {agent_id}\n"
-        f"Name: {agent_data['name']}\n"
-        f"Agency: {agent_data['agency']}\n"
-        f"Verification Status: "
-        f"{agent_data['verification_status']}\n"
-        f"VAH Verification Number: "
-        f"{agent_data['verification_number']}\n"
-        f"Verification Number Status: "
-        f"{agent_data['verification_number_status']}\n"
-        f"Verification Number Month: "
-        f"{agent_data['verification_number_month']}\n"
-        f"Identity Document: "
-        f"{agent_data['identity_document']}\n"
-        f"Real Estate License: "
-        f"{agent_data['license_status']}\n"
-        f"Current Address: "
-        f"{agent_data['current_address']}\n\n"
-        "IMPORTANT:\n"
-        "The VAH Verification Number changes every month. "
-        "Customers must check the current VAH Verification Number "
-        "and latest verification status on the Verified Agents and "
-        "Homes database/platform immediately before making any "
-        "transaction or payment. Do not rely on an old number."
-    )
-
-
-def search_agent_documents(agent_id):
-    """Search documents belonging to an agent."""
-
-    agent_data = AGENTS.get(agent_id)
-
-    if agent_data is None:
-        return f"No agent was found with ID '{agent_id}'."
-
-    return (
-        f"Agent Documents\n"
-        f"Agent ID: {agent_id}\n"
-        f"Name: {agent_data['name']}\n\n"
-        f"{_format_documents(agent_data['documents'])}"
-    )
-
-
-def verify_agent_documents(agent_id):
-    """Verify the recorded documents for an agent."""
-
-    agent_data = AGENTS.get(agent_id)
-
-    if agent_data is None:
-        return f"No agent was found with ID '{agent_id}'."
-
-    status = _format_document_status(
-        agent_data["documents"]
-    )
-
-    return (
-        f"Agent Document Verification\n"
-        f"Agent ID: {agent_id}\n"
-        f"Name: {agent_data['name']}\n"
-        f"Overall Status: {status}\n\n"
-        f"{_format_documents(agent_data['documents'])}"
-    )
-
-
-# -------------------------------------------------------------------
-# MONTHLY AGENT UPDATE FUNCTIONS
-# -------------------------------------------------------------------
-
-def get_agent_monthly_update(agent_id):
-    """Return the agent's monthly update information."""
-
-    agent_data = AGENTS.get(agent_id)
-
-    if agent_data is None:
-        return f"No agent was found with ID '{agent_id}'."
-
-    monthly = agent_data["monthly_update"]
-
-    return (
-        f"Monthly Agent Update\n"
-        f"Agent ID: {agent_id}\n"
-        f"Agent Name: {agent_data['name']}\n"
-        f"Update Frequency: {monthly['frequency']}\n"
-        f"Last Update: {monthly['last_update']}\n"
-        f"Next Update: {monthly['next_update']}\n"
-        f"Current Address: {agent_data['current_address']}\n"
-        f"Address Update Status: "
-        f"{agent_data['address_update_status']}\n\n"
-        "The agent's VAH Verification Number is also updated "
-        "monthly. Always check the latest database record before "
-        "making a transaction."
-    )
-
-
-def get_agent_reports(agent_id):
-    """Return reports recorded against an agent."""
-
-    agent_data = AGENTS.get(agent_id)
-
-    if agent_data is None:
-        return f"No agent was found with ID '{agent_id}'."
-
-    reports = agent_data["reports"]
-
-    if not reports:
-        return (
-            f"Agent: {agent_data['name']}\n"
-            "Reports: No reports currently recorded."
-        )
-
-    return (
-        f"Agent: {agent_data['name']}\n"
-        "Reports:\n"
-        + "\n".join(f"- {report}" for report in reports)
-    )
-
-
-# -------------------------------------------------------------------
-# SHORT-LET CURRENT LOOK AND REPORT FUNCTIONS
-# -------------------------------------------------------------------
-
-def get_shortlet_current_look(property_id):
-    """Return the latest recorded appearance/update of a short-let."""
-
-    shortlet_data = SHORTLETS.get(property_id)
-
-    if shortlet_data is None:
-        return (
-            f"No short-let record was found for property "
-            f"'{property_id}'."
-        )
-
-    return (
-        f"Short-let Current Look\n"
-        f"Property ID: {property_id}\n"
-        f"Current Look: {shortlet_data['current_look']}\n"
-        f"Update Status: {shortlet_data['current_look_status']}\n"
-        f"Last Update: {shortlet_data['last_update']}\n\n"
-        "Customers should confirm the latest available information "
-        "before booking or paying."
-    )
-
-
-def get_shortlet_reports(property_id):
-    """Return reports recorded against a short-let."""
-
-    shortlet_data = SHORTLETS.get(property_id)
-
-    if shortlet_data is None:
-        return (
-            f"No short-let record was found for property "
-            f"'{property_id}'."
-        )
-
-    reports = shortlet_data["reported_issues"]
-
-    if not reports:
-        return (
-            f"Property ID: {property_id}\n"
-            "Reports: No reports currently recorded."
-        )
-
-    return (
-        f"Property ID: {property_id}\n"
-        "Reported Issues:\n"
-        + "\n".join(f"- {report}" for report in reports)
-    )
-
-
-# -------------------------------------------------------------------
-# VAH VERIFICATION NUMBER
-# -------------------------------------------------------------------
-
-def get_vah_verification_number(agent_id):
+# ============================================================
+# CAR HIRE FAQ
+# ============================================================
+
+CAR_HIRE_FAQ = [
+
+    {
+        "id": 57,
+        "category": "Car Hire",
+        "question": "Do you provide car hire for short-let guests?",
+        "answer": (
+            "Yes, where available, guests may request car-hire or "
+            "transportation services alongside their short-let booking. "
+            "Availability depends on the service provider."
+        ),
+    },
+    {
+        "id": 58,
+        "category": "Car Hire",
+        "question": "What types of cars are available?",
+        "answer": (
+            "Vehicle options may include economy, saloon, SUV, executive, "
+            "luxury, or other categories depending on availability."
+        ),
+    },
+    {
+        "id": 59,
+        "category": "Car Hire",
+        "question": "Can I hire a car for my entire stay?",
+        "answer": (
+            "Yes, where available, vehicles can be hired for the duration of "
+            "your stay subject to the provider's rental terms."
+        ),
+    },
+    {
+        "id": 60,
+        "category": "Car Hire",
+        "question": "Can I hire a car for a few hours or one day?",
+        "answer": (
+            "Short-duration rentals may be available, depending on the "
+            "vehicle provider and rental terms."
+        ),
+    },
+    {
+        "id": 61,
+        "category": "Car Hire",
+        "question": "Can I book a car before arriving in Lagos?",
+        "answer": (
+            "Yes, advance requests can be made where the provider accepts "
+            "pre-arrival bookings."
+        ),
+    },
+    {
+        "id": 62,
+        "category": "Car Hire",
+        "question": "Can I book a car together with my short-let?",
+        "answer": (
+            "Yes. Where available, short-let accommodation and car-hire "
+            "services can be requested together."
+        ),
+    },
+    {
+        "id": 63,
+        "category": "Car Hire",
+        "question": "Is airport pickup or drop-off available?",
+        "answer": (
+            "Airport pickup and drop-off may be available depending on the "
+            "vehicle provider and requested airport transfer."
+        ),
+    },
+    {
+        "id": 64,
+        "category": "Car Hire",
+        "question": "Can I hire a driver or chauffeur?",
+        "answer": (
+            "Yes, chauffeur-driven vehicles may be available depending on "
+            "the provider and vehicle category."
+        ),
+    },
+    {
+        "id": 65,
+        "category": "Car Hire",
+        "question": "Is self-drive available?",
+        "answer": (
+            "Self-drive may be available for eligible renters and vehicles, "
+            "subject to the provider's requirements."
+        ),
+    },
+    {
+        "id": 66,
+        "category": "Car Hire",
+        "question": "What are the requirements for car hire?",
+        "answer": (
+            "Requirements vary by provider and may include valid "
+            "identification, a valid driver's licence for self-drive, "
+            "contact information, and other rental documentation."
+        ),
+    },
+    {
+        "id": 67,
+        "category": "Car Hire",
+        "question": "Is a security deposit required for car hire?",
+        "answer": (
+            "Some vehicle providers require a refundable security deposit. "
+            "The amount and refund conditions depend on the rental provider."
+        ),
+    },
+    {
+        "id": 68,
+        "category": "Car Hire",
+        "question": "What is included in the car-hire price?",
+        "answer": (
+            "Inclusions vary. Depending on the provider, the price may cover "
+            "the vehicle, driver, agreed rental period, or specific services. "
+            "Always confirm inclusions before payment."
+        ),
+    },
+    {
+        "id": 69,
+        "category": "Car Hire",
+        "question": "Is fuel included?",
+        "answer": (
+            "Fuel is not automatically assumed to be included. Confirm the "
+            "fuel arrangement with the vehicle provider."
+        ),
+    },
+    {
+        "id": 70,
+        "category": "Car Hire",
+        "question": "Are tolls and parking included?",
+        "answer": (
+            "Tolls, parking, airport fees, and similar charges may be "
+            "additional unless the provider specifically states that they "
+            "are included."
+        ),
+    },
+    {
+        "id": 71,
+        "category": "Car Hire",
+        "question": "Is insurance included?",
+        "answer": (
+            "Insurance coverage depends on the vehicle provider and rental "
+            "agreement. Confirm the type and limits of coverage before "
+            "accepting the vehicle."
+        ),
+    },
+    {
+        "id": 72,
+        "category": "Car Hire",
+        "question": "Can I travel outside Lagos with the rental car?",
+        "answer": (
+            "Travel outside Lagos may be possible with prior approval from "
+            "the vehicle provider. Additional charges or restrictions may "
+            "apply."
+        ),
+    },
+    {
+        "id": 73,
+        "category": "Car Hire",
+        "question": "Can I extend my car rental?",
+        "answer": (
+            "Extensions may be possible subject to vehicle availability and "
+            "provider approval."
+        ),
+    },
+    {
+        "id": 74,
+        "category": "Car Hire",
+        "question": "What happens if I return the vehicle late?",
+        "answer": (
+            "Late returns may attract additional charges according to the "
+            "vehicle provider's rental agreement."
+        ),
+    },
+    {
+        "id": 75,
+        "category": "Car Hire",
+        "question": "What happens if the vehicle is damaged?",
+        "answer": (
+            "The renter may be responsible for applicable damage costs "
+            "according to the rental agreement, insurance arrangements, and "
+            "the circumstances of the damage."
+        ),
+    },
+    {
+        "id": 76,
+        "category": "Car Hire",
+        "question": "What if I lose the car keys or documents?",
+        "answer": (
+            "Loss of keys, vehicle documents, or other supplied items may "
+            "result in replacement or administrative charges."
+        ),
+    },
+    {
+        "id": 77,
+        "category": "Car Hire",
+        "question": "Can I cancel my car rental?",
+        "answer": (
+            "Cancellation terms depend on the vehicle provider and booking "
+            "agreement."
+        ),
+    },
+    {
+        "id": 78,
+        "category": "Car Hire",
+        "question": "Can I request a specific vehicle?",
+        "answer": (
+            "You may request a specific vehicle or vehicle category, but "
+            "confirmation depends on availability."
+        ),
+    },
+    {
+        "id": 79,
+        "category": "Car Hire",
+        "question": "Are luxury or executive vehicles available?",
+        "answer": (
+            "Luxury and executive vehicles may be available depending on "
+            "the provider's fleet."
+        ),
+    },
+    {
+        "id": 80,
+        "category": "Car Hire",
+        "question": "Can I hire a vehicle for business, events, or tours?",
+        "answer": (
+            "Yes, where available, vehicles may be arranged for business "
+            "travel, events, airport transfers, sightseeing, tours, and "
+            "other approved purposes."
+        ),
+    },
+    {
+        "id": 81,
+        "category": "Car Hire",
+        "question": "Can I hire a vehicle for multiple guests?",
+        "answer": (
+            "Yes, vehicle selection should be based on the number of "
+            "passengers and luggage. The appropriate vehicle category must "
+            "be confirmed before booking."
+        ),
+    },
+    {
+        "id": 82,
+        "category": "Car Hire",
+        "question": "Can I book airport transfer only?",
+        "answer": (
+            "Yes, airport pickup or drop-off may be booked separately where "
+            "the transportation provider offers airport-transfer services."
+        ),
+    },
+    {
+        "id": 83,
+        "category": "Car Hire",
+        "question": "How do I contact the car-hire provider?",
+        "answer": (
+            "The contact details of the relevant vehicle provider should be "
+            "provided as part of the confirmed booking or service arrangement."
+        ),
+    },
+]
+
+
+# ============================================================
+# COMBINED SHORT-LET + CAR HIRE FAQ
+# ============================================================
+
+COMBINED_SERVICE_FAQ = [
+
+    {
+        "id": 84,
+        "category": "Combined Services",
+        "question": "Can I book a shortlet apartment and car hire service together?",
+        "answer": (
+            "Yes. Where available, guests can request both short-let "
+            "accommodation and car-hire services as part of their stay. "
+            "This can simplify accommodation, airport transfers, and "
+            "transportation planning. Availability, vehicle type, driver "
+            "options, pricing, and terms depend on the provider."
+        ),
+    },
+
+    {
+        "id": 85,
+        "category": "Combined Services",
+        "question": "Can I arrange airport pickup with my short-let booking?",
+        "answer": (
+            "Yes, where airport-transfer services are available. Guests may "
+            "request airport pickup or drop-off alongside their accommodation "
+            "booking."
+        ),
+    },
+]
+
+
+# ============================================================
+# VERIFIED AGENTS AND HOMES FAQ
+# ============================================================
+
+VERIFICATION_FAQ = [
+
+    {
+        "id": 86,
+        "category": "About VAH",
+        "question": "What is Verified Agents and Homes Ltd?",
+        "answer": (
+            "Verified Agents and Homes Ltd is a property and real-estate "
+            "verification service designed to help customers make safer "
+            "property and accommodation decisions before making transactions."
+        ),
+    },
+
+    {
+        "id": 87,
+        "category": "About VAH",
+        "question": "What is the VAH Database?",
+        "answer": (
+            "The VAH Database is a verification information system used to "
+            "record and organize available information relating to properties, "
+            "agents, documents, short-let addresses, owners, managers, and "
+            "verification updates."
+        ),
+    },
+
+    {
+        "id": 88,
+        "category": "Payment Safety",
+        "question": "Why should I verify before payment?",
+        "answer": (
+            "Verification can help identify inconsistencies, missing "
+            "information, questionable documentation, identity concerns, or "
+            "other warning signs before money changes hands."
+        ),
+    },
+
+    {
+        "id": 89,
+        "category": "Agent Verification",
+        "question": "How can I verify a real-estate agent?",
+        "answer": (
+            "You can request an agent search or verification using available "
+            "identifying information such as the agent's name, phone number, "
+            "agency name, or VAH verification number."
+        ),
+    },
+
+    {
+        "id": 90,
+        "category": "Agent Verification",
+        "question": "Can VAH verify the owner or manager of a property?",
+        "answer": (
+            "Yes, where sufficient information is available, VAH can support "
+            "verification of a property owner or short-let manager."
+        ),
+    },
+
+    {
+        "id": 91,
+        "category": "Property Verification",
+        "question": "Can VAH verify land or house documents?",
+        "answer": (
+            "Yes. VAH can assist with property and document verification "
+            "based on the documents and information available for review."
+        ),
+    },
+
+    {
+        "id": 92,
+        "category": "Document Verification",
+        "question": "What types of documents can be verified?",
+        "answer": (
+            "Depending on the property and available records, documents may "
+            "include title documents, deeds, surveys, Certificates of "
+            "Occupancy, approved building plans, building approvals, and "
+            "other relevant property documentation."
+        ),
+    },
+
+    {
+        "id": 93,
+        "category": "Property Verification",
+        "question": "Can VAH verify whether a property listing is genuine?",
+        "answer": (
+            "VAH can conduct available verification checks on the property, "
+            "agent, owner, manager, address, and documents. Verification "
+            "should be treated as due-diligence information rather than an "
+            "absolute guarantee."
+        ),
+    },
+
+    {
+        "id": 94,
+        "category": "Short-let Verification",
+        "question": "Can VAH verify a short-let apartment?",
+        "answer": (
+            "Yes. Available checks may include the short-let address, owner, "
+            "manager, property information, and reported concerns."
+        ),
+    },
+
+    {
+        "id": 95,
+        "category": "Verification Number",
+        "question": "What is a VAH Verification Number?",
+        "answer": (
+            "A VAH Verification Number is a reference associated with a "
+            "verification record. It can help customers identify and check "
+            "the relevant verification information."
+        ),
+    },
+
+    {
+        "id": 96,
+        "category": "Verification Number",
+        "question": "How do I check a VAH Verification Number?",
+        "answer": (
+            "Provide or search the verification number through the applicable "
+            "VAH verification/database service and compare the returned "
+            "information with the property, agent, owner, or manager details "
+            "you are dealing with."
+        ),
+    },
+
+    {
+        "id": 97,
+        "category": "Verification Number",
+        "question": "Does a VAH Verification Number guarantee my safety?",
+        "answer": (
+            "No. A verification number does not guarantee that a transaction "
+            "will be completely safe or that no future dispute, fraud, loss, "
+            "property defect, or service problem can occur. It is a "
+            "due-diligence reference."
+        ),
+    },
+
+    {
+        "id": 98,
+        "category": "Verification Updates",
+        "question": "How often is verification information updated?",
+        "answer": (
+            "Verification information may be updated periodically as new "
+            "information becomes available. Customers should check the "
+            "latest available record before making payment."
+        ),
+    },
+
+    {
+        "id": 99,
+        "category": "Location Verification",
+        "question": "Can VAH verify a property address or location?",
+        "answer": (
+            "VAH can assist with available address and location checks. "
+            "Customers should compare the verified information with the "
+            "actual property and transaction details."
+        ),
+    },
+
+    {
+        "id": 100,
+        "category": "Fraud Prevention",
+        "question": "What if an agent refuses to provide a verification number?",
+        "answer": (
+            "A refusal should be treated as a reason to exercise caution. "
+            "Customers should independently verify the agent, property, "
+            "documents, and payment instructions before proceeding."
+        ),
+    },
+
+    {
+        "id": 101,
+        "category": "Reporting",
+        "question": "How can I report suspected fraud or a verification concern?",
+        "answer": (
+            "Use the applicable VAH reporting channel and provide as much "
+            "relevant information as possible, including names, phone "
+            "numbers, property details, documents, payment information, "
+            "screenshots, and the nature of the concern. Do not share "
+            "unnecessary passwords or sensitive credentials."
+        ),
+    },
+
+    {
+        "id": 102,
+        "category": "Reporting",
+        "question": "What happens after I report a concern?",
+        "answer": (
+            "The reported information can be reviewed and recorded for "
+            "further investigation or verification. A report does not "
+            "automatically establish that fraud has occurred."
+        ),
+    },
+
+    {
+        "id": 103,
+        "category": "Ownership",
+        "question": "Can VAH verify property ownership?",
+        "answer": (
+            "VAH can conduct available ownership-related checks based on "
+            "documents, records, and information available for verification."
+        ),
+    },
+
+    {
+        "id": 104,
+        "category": "Property Verification",
+        "question": "Should I verify before paying for land or a house?",
+        "answer": (
+            "Yes. Customers are strongly encouraged to conduct appropriate "
+            "property, ownership, document, location, agent, and transaction "
+            "due diligence before making payment."
+        ),
+    },
+
+    {
+        "id": 105,
+        "category": "Investor Due Diligence",
+        "question": "Can investors use VAH for property due diligence?",
+        "answer": (
+            "Yes. Investors can use available VAH verification services as "
+            "part of a broader due-diligence process before committing funds."
+        ),
+    },
+
+    {
+        "id": 106,
+        "category": "Tourists and Guests",
+        "question": "Can tourists and short-let guests use VAH?",
+        "answer": (
+            "Yes. Tourists, visitors, tenants, and short-let guests can use "
+            "available verification services to support checks on short-let "
+            "addresses, owners, managers, agents, and other relevant details."
+        ),
+    },
+
+    {
+        "id": 107,
+        "category": "Registration",
+        "question": "Can property owners or agents register with VAH?",
+        "answer": (
+            "Property owners, agents, and relevant property representatives "
+            "may request registration or verification where the applicable "
+            "VAH service is available."
+        ),
+    },
+
+    {
+        "id": 108,
+        "category": "Verification Request",
+        "question": "How do I request a verification?",
+        "answer": (
+            "Submit the relevant property, agent, owner, manager, or document "
+            "information through the applicable VAH verification channel."
+        ),
+    },
+
+    {
+        "id": 109,
+        "category": "Verification Request",
+        "question": "What information is required for verification?",
+        "answer": (
+            "Requirements vary by verification type but may include property "
+            "address, property reference, agent details, owner/manager "
+            "details, phone number, relevant documents, and other information "
+            "needed for the requested check."
+        ),
+    },
+
+    {
+        "id": 110,
+        "category": "Verification Fees",
+        "question": "How much does verification cost?",
+        "answer": (
+            "Verification fees depend on the type and scope of service "
+            "requested. Customers should confirm the current applicable fee "
+            "before payment."
+        ),
+    },
+
+    {
+        "id": 111,
+        "category": "Verification Time",
+        "question": "How long does verification take?",
+        "answer": (
+            "Processing time depends on the type of verification, availability "
+            "of records, completeness of submitted information, and any "
+            "required external confirmation."
+        ),
+    },
+
+    {
+        "id": 112,
+        "category": "Verification Disclaimer",
+        "question": "Does verification guarantee that I will not lose money?",
+        "answer": (
+            "No. Verification reduces information gaps and may identify "
+            "warning signs, but it cannot guarantee that a customer will "
+            "never experience fraud, loss, disputes, property defects, or "
+            "other transaction problems."
+        ),
+    },
+
+    {
+        "id": 113,
+        "category": "Verification",
+        "question": "What is the difference between property verification and document verification?",
+        "answer": (
+            "Property verification considers available information about the "
+            "property, address, ownership, agent, owner, manager, or listing. "
+            "Document verification focuses specifically on reviewing and "
+            "checking relevant property documents and their available records."
+        ),
+    },
+
+    {
+        "id": 114,
+        "category": "Payment Safety",
+        "question": "Why should I verify before payment?",
+        "answer": PAYMENT_SAFETY_NOTICE,
+    },
+]
+
+
+# ============================================================
+# FAQ COLLECTION
+# ============================================================
+
+FAQ_SECTIONS = {
+    "shortlet": SHORTLET_FAQ,
+    "car_hire": CAR_HIRE_FAQ,
+    "combined_services": COMBINED_SERVICE_FAQ,
+    "verification": VERIFICATION_FAQ,
+}
+
+
+# ============================================================
+# FAQ HELPER FUNCTIONS
+# ============================================================
+
+def get_shortlet_faq():
     """
-    Return the current VAH Verification Number for an agent.
-
-    The VAH Verification Number is separate from the Agent ID and
-    changes every month.
+    Return all short-let FAQs.
     """
-
-    agent_data = AGENTS.get(agent_id)
-
-    if agent_data is None:
-        return f"No agent was found with ID '{agent_id}'."
-
-    return (
-        f"VAH Verification Number\n"
-        f"Agent ID: {agent_id}\n"
-        f"Agent: {agent_data['name']}\n"
-        f"Agency: {agent_data['agency']}\n"
-        f"Current VAH Verification Number: "
-        f"{agent_data['verification_number']}\n"
-        f"Number Status: "
-        f"{agent_data['verification_number_status']}\n"
-        f"Verification Month: "
-        f"{agent_data['verification_number_month']}\n"
-        f"Update Frequency: "
-        f"{agent_data['verification_number_update_frequency']}\n"
-        f"Agent Verification Status: "
-        f"{agent_data['verification_status']}\n\n"
-        "IMPORTANT CUSTOMER SAFETY NOTICE:\n"
-        "The VAH Verification Number changes every month. "
-        "Always check the current VAH Verification Number and "
-        "latest verification status on the Verified Agents and "
-        "Homes database/platform immediately before making any "
-        "transaction or payment.\n\n"
-        "Never rely on an old VAH Verification Number."
-    )
+    return SHORTLET_FAQ
 
 
-# -------------------------------------------------------------------
-# VERIFICATION STATUS LIST
-# -------------------------------------------------------------------
-
-def get_verification_statuses():
-    """Return all available verification statuses."""
-
-    return (
-        "Available Verification Statuses:\n"
-        + "\n".join(
-            f"- {status}"
-            for status in VERIFICATION_STATUSES
-        )
-    )
+def get_car_hire_faq():
+    """
+    Return all car-hire FAQs.
+    """
+    return CAR_HIRE_FAQ
 
 
-# -------------------------------------------------------------------
-# PAYMENT SAFETY
-# -------------------------------------------------------------------
+def get_verification_faq():
+    """
+    Return all Verified Agents and Homes verification FAQs.
+    """
+    return VERIFICATION_FAQ
+
+
+def get_shortlet_house_rules():
+    """
+    Return the current short-let house rules.
+    """
+    return SHORTLET_HOUSE_RULES
+
+
+def get_combined_booking_faq():
+    """
+    Return FAQs covering combined short-let and car-hire services.
+    """
+    return COMBINED_SERVICE_FAQ
+
 
 def get_payment_safety_guidance():
-    """Return important payment and transaction safety guidance."""
+    """
+    Return payment and transaction safety guidance.
+    """
+    return PAYMENT_SAFETY_NOTICE
 
-    return (
-        "Verified Agents and Homes Payment Safety Guidance\n\n"
-        "Before making any payment or transaction with an agent:\n"
-        "1. Confirm the agent's identity.\n"
-        "2. Confirm the agent's current verification status.\n"
-        "3. Confirm the agent's current VAH Verification Number.\n"
-        "4. Check the Verified Agents and Homes database/platform "
-        "for the latest monthly update.\n"
-        "5. Do not rely on an old verification number.\n"
-        "6. Check for any reports or warnings associated with the agent.\n"
-        "7. Verify the relevant property and documents where applicable.\n"
-        "8. If information cannot be confirmed, do not proceed until "
-        "the matter has been reviewed.\n\n"
-        "IMPORTANT:\n"
-        "VAH Verification Numbers change every month. A previous "
-        "month's number should not be treated as the current number."
+
+def get_all_faqs():
+    """
+    Return every FAQ grouped by category.
+    """
+    return FAQ_SECTIONS
+
+
+def search_faq(query, section=None, limit=5):
+    """
+    Search the FAQ database using simple keyword matching.
+
+    Parameters:
+        query (str): User's question or search phrase.
+        section (str|None): Optional section:
+            'shortlet'
+            'car_hire'
+            'combined_services'
+            'verification'
+        limit (int): Maximum number of results.
+
+    Returns:
+        list: Matching FAQ records.
+    """
+
+    if not query:
+        return []
+
+    query_words = {
+        word.strip(".,?!:;()[]{}").lower()
+        for word in str(query).split()
+        if len(word.strip(".,?!:;()[]{}")) > 2
+    }
+
+    if section:
+        faq_source = FAQ_SECTIONS.get(section, [])
+    else:
+        faq_source = (
+            SHORTLET_FAQ
+            + CAR_HIRE_FAQ
+            + COMBINED_SERVICE_FAQ
+            + VERIFICATION_FAQ
+        )
+
+    results = []
+
+    for faq in faq_source:
+        searchable_text = (
+            f"{faq.get('question', '')} "
+            f"{faq.get('answer', '')} "
+            f"{faq.get('category', '')}"
+        ).lower()
+
+        score = sum(
+            1 for word in query_words
+            if word in searchable_text
+        )
+
+        if score > 0:
+            result = dict(faq)
+            result["_score"] = score
+            results.append(result)
+
+    results.sort(key=lambda item: item["_score"], reverse=True)
+
+    for result in results:
+        result.pop("_score", None)
+
+    return results[:limit]
+
+
+def get_faq_answer(question, section=None):
+    """
+    Return the best FAQ answer for a question.
+
+    This performs a simple keyword search and returns the best match.
+    """
+    results = search_faq(
+        query=question,
+        section=section,
+        limit=1,
     )
+
+    if not results:
+        return None
+
+    return results[0]
+
+
+def get_faq_categories(section=None):
+    """
+    Return the FAQ categories available in a section.
+    """
+
+    if section:
+        faq_source = FAQ_SECTIONS.get(section, [])
+    else:
+        faq_source = (
+            SHORTLET_FAQ
+            + CAR_HIRE_FAQ
+            + COMBINED_SERVICE_FAQ
+            + VERIFICATION_FAQ
+        )
+
+    return sorted({
+        faq["category"]
+        for faq in faq_source
+        if faq.get("category")
+    })

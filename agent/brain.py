@@ -2,8 +2,12 @@ import json
 
 from openai import OpenAI
 
-from .tool_definitions import TOOLS
-from tools.tool_registry import get_tool
+try:
+    from tools.tool_registry import TOOLS, get_tool
+except ImportError:
+    from tools.tool_registry import get_tool
+
+    TOOLS = []
 
 
 AGENT_INSTRUCTIONS = """
