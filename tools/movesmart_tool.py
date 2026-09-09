@@ -1,4 +1,3 @@
-```python
 # ============================================================
 # LAGOS MOVESMART
 # REPORT CATEGORIES, FAQS, STATUS & REPORTING FUNCTIONS
@@ -196,7 +195,6 @@ MOVESMART_CATEGORY_KEYWORDS = {
         "keke",
         "motorcycle",
         "okada",
-
         "overloading",
         "overloaded",
         "overload",
@@ -204,7 +202,6 @@ MOVESMART_CATEGORY_KEYWORDS = {
         "carrying too many passengers",
         "passengers beyond capacity",
         "excess passengers",
-
         "no seat belt",
         "no seatbelt",
         "missing seat belt",
@@ -214,19 +211,15 @@ MOVESMART_CATEGORY_KEYWORDS = {
         "no mirror",
         "broken mirror",
         "broken side mirror",
-
         "no fuel tank",
         "no proper fuel tank",
         "unsafe fuel tank",
-
         "no window",
         "broken window",
         "nylon window",
-
         "broken seat",
         "bad seat",
         "damaged seat",
-
         "unsafe vehicle",
         "unsafe bus",
         "unroadworthy vehicle",
@@ -420,7 +413,6 @@ MOVESMART_FAQS = {
         ],
     },
 
-
     "how_to_report": {
         "name": "How to Submit a Report",
         "faqs": [
@@ -472,7 +464,6 @@ MOVESMART_FAQS = {
         ],
     },
 
-
     "safety_and_privacy": {
         "name": "Safety & Privacy",
         "faqs": [
@@ -517,7 +508,6 @@ MOVESMART_FAQS = {
             },
         ],
     },
-
 
     "review_and_verification": {
         "name": "Review & Verification",
@@ -573,7 +563,6 @@ MOVESMART_FAQS = {
         ],
     },
 
-
     "authorities_and_action": {
         "name": "Authorities & Action",
         "faqs": [
@@ -618,7 +607,6 @@ MOVESMART_FAQS = {
             },
         ],
     },
-
 
     "rewards": {
         "name": "Rewards",
@@ -679,7 +667,6 @@ MOVESMART_FAQS = {
         ],
     },
 
-
     "locations_and_vehicles": {
         "name": "Locations & Vehicles",
         "faqs": [
@@ -739,7 +726,6 @@ MOVESMART_FAQS = {
         ],
     },
 
-
     "emergencies": {
         "name": "Emergencies",
         "faqs": [
@@ -766,7 +752,6 @@ MOVESMART_FAQS = {
             },
         ],
     },
-
 
     "accuracy_and_trust": {
         "name": "Accuracy & Trust",
@@ -901,6 +886,7 @@ def recommend_movesmart_category(report_description):
     unique_matches = []
 
     for match in matches:
+
         if match not in unique_matches:
             unique_matches.append(match)
 
@@ -1065,12 +1051,10 @@ def get_movesmart_faq(faq_question):
                     score += 1
 
             if score > best_score:
-
                 best_score = score
                 best_match = faq
 
     if best_match and best_score >= 2:
-
         return (
             "Lagos MoveSmart FAQ\n\n"
             f"Question: {best_match['question']}\n"
@@ -1203,6 +1187,7 @@ def get_movesmart_report_statuses():
     """Return the possible stages of a Lagos MoveSmart report."""
 
     descriptions = {
+
         "Reported": (
             "The report has been submitted and recorded."
         ),
@@ -1262,20 +1247,16 @@ def request_movesmart_evidence():
 
     return (
         "Lagos MoveSmart Evidence Guidance\n\n"
-
         "A report may be supported with:\n"
-
         "- Photo evidence\n"
         "- Video evidence\n"
         "- The location of the incident or problem\n"
         "- The date and time\n"
         "- Vehicle registration or identifying details, where available\n"
         "- A clear description of what happened or what was observed\n\n"
-
         "Evidence can help reviewers understand and assess the report. "
         "Submitting a report does not by itself mean that the allegation "
         "has been verified.\n\n"
-
         "SAFETY FIRST:\n"
         "Never put yourself or another person in danger to obtain "
         "photographs, videos, or other evidence."
@@ -1291,11 +1272,9 @@ def get_movesmart_reward_information():
 
     return (
         "Lagos MoveSmart Reward Information\n\n"
-
         "Eligible and verified reports may qualify for a reward, "
         "subject to the applicable Lagos MoveSmart reward criteria "
         "and terms.\n\n"
-
         "Important:\n"
         "- Not every report qualifies for a reward.\n"
         "- A report must meet the applicable eligibility requirements.\n"
@@ -1317,16 +1296,12 @@ def get_movesmart_emergency_guidance():
 
     return (
         "Lagos MoveSmart Emergency Guidance\n\n"
-
         "Lagos MoveSmart reporting should not replace emergency services.\n\n"
-
         "If you witness an immediate emergency, serious accident, "
         "violent incident, or situation requiring urgent assistance, "
         "prioritize your safety and contact the appropriate emergency "
         "or law-enforcement authority.\n\n"
-
         "You may submit a Lagos MoveSmart report when it is safe to do so.\n\n"
-
         "Never confront, chase, threaten, or attempt to physically stop "
         "a person involved in a dangerous situation."
     )
@@ -1359,7 +1334,6 @@ def create_movesmart_protected_information_request(
         return "Please state the reason for requesting the information."
 
     if authorization_documents == "Not provided":
-
         return (
             "Protected Information Request\n"
             "Status: Authorization Required\n\n"
@@ -1407,4 +1381,3 @@ def create_movesmart_followup(report_or_request):
         "A responsible team member or appropriate authority should "
         "review the matter and determine the next action."
     )
-```

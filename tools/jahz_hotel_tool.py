@@ -1,4 +1,3 @@
-```python
 # ============================================================
 # JAHZ EMPIRE HOTEL & SUITES
 # SERVICES, FACILITIES, FAQs AND CUSTOMER ENQUIRIES
@@ -149,7 +148,6 @@ JAHZ_HOTEL_INFO = {
         }
     },
 
-
     # --------------------------------------------------------
     # PRICE & PAYMENT
     # --------------------------------------------------------
@@ -205,7 +203,6 @@ JAHZ_HOTEL_INFO = {
                 "Please contact the hotel for the applicable rate."
         }
     },
-
 
     # --------------------------------------------------------
     # ROOMS
@@ -264,7 +261,6 @@ JAHZ_HOTEL_INFO = {
                 "they intend to book."
         }
     },
-
 
     # --------------------------------------------------------
     # BOOKING
@@ -329,7 +325,6 @@ JAHZ_HOTEL_INFO = {
         }
     },
 
-
     # --------------------------------------------------------
     # CHECK-IN & CHECK-OUT
     # --------------------------------------------------------
@@ -372,7 +367,6 @@ JAHZ_HOTEL_INFO = {
         }
     },
 
-
     # --------------------------------------------------------
     # FOOD & RESTAURANT
     # --------------------------------------------------------
@@ -413,7 +407,6 @@ JAHZ_HOTEL_INFO = {
                 "No. Outside food is not permitted."
         }
     },
-
 
     # --------------------------------------------------------
     # FACILITIES
@@ -471,7 +464,6 @@ JAHZ_HOTEL_INFO = {
         }
     },
 
-
     # --------------------------------------------------------
     # GUEST POLICIES
     # --------------------------------------------------------
@@ -523,7 +515,6 @@ JAHZ_HOTEL_INFO = {
         }
     },
 
-
     # --------------------------------------------------------
     # TRANSPORTATION
     # --------------------------------------------------------
@@ -563,7 +554,6 @@ JAHZ_HOTEL_INFO = {
                 "Yes. Car rental assistance is available."
         }
     },
-
 
     # --------------------------------------------------------
     # VERIFICATION & TRUST
@@ -620,7 +610,6 @@ JAHZ_HOTEL_INFO = {
         }
     },
 
-
     # --------------------------------------------------------
     # REVIEWS & EXPERIENCE
     # --------------------------------------------------------
@@ -668,7 +657,6 @@ JAHZ_HOTEL_INFO = {
         }
     },
 
-
     # ========================================================
     # AIR PEACE FLIGHTS
     # ========================================================
@@ -681,9 +669,7 @@ JAHZ_HOTEL_INFO = {
             "a 10% Air Peace discount subject to the applicable terms "
             "and conditions."
         ),
-
         "faq": {
-
             "Do you help guests book flights?":
                 "Yes. We assist guests with Air Peace flight bookings.",
 
@@ -733,7 +719,6 @@ JAHZ_HOTEL_INFO = {
             "Can you assist with flight changes or cancellations?":
                 "Yes. Assistance with flight changes or cancellations is available, "
                 "subject to Air Peace's applicable terms and conditions.",
-
 
             # ------------------------------------------------
             # 10% AIR PEACE DISCOUNT
@@ -890,13 +875,13 @@ def get_jahz_hotel_service(service):
             or search_term in description
         ):
             return (
-                f"JAHZ Empire Hotel & Suites\n"
+                "JAHZ Empire Hotel & Suites\n"
                 f"Service: {service_data['name']}\n"
                 f"Description: {service_data['description']}"
             )
 
     return (
-        f"No JAHZ Empire Hotel & Suites service was found matching "
+        "No JAHZ Empire Hotel & Suites service was found matching "
         f"'{service}'."
     )
 
@@ -935,34 +920,37 @@ def get_jahz_hotel_faq():
 # ============================================================
 
 def search_jahz_hotel_faq(customer_question):
-    """
-    Search the JAHZ hotel FAQ and return the most relevant answer.
-    """
+    """Search the JAHZ hotel FAQ and return the most relevant answer."""
 
     question = customer_question.strip().lower()
 
     if not question:
         return "Please provide your question."
 
-    # Search through all FAQ questions and answers
+    # --------------------------------------------------------
+    # SEARCH THROUGH ALL FAQ QUESTIONS AND ANSWERS
+    # --------------------------------------------------------
+
     for category in JAHZ_HOTEL_INFO.values():
 
         for faq_question, answer in category["faq"].items():
 
             faq_question_lower = faq_question.lower()
 
-            # Exact or partial question match
             if (
                 question in faq_question_lower
                 or faq_question_lower in question
             ):
                 return (
-                    f"JAHZ Empire Hotel & Suites\n\n"
+                    "JAHZ Empire Hotel & Suites\n\n"
                     f"Question: {faq_question}\n"
                     f"Answer: {answer}"
                 )
 
-    # Keyword-based fallback
+    # --------------------------------------------------------
+    # KEYWORD-BASED FALLBACK
+    # --------------------------------------------------------
+
     faq_keywords = {
 
         "price": "How much is a room per night?",
@@ -1011,19 +999,35 @@ def search_jahz_hotel_faq(customer_question):
         "flight": "Do you help guests book flights?",
         "flights": "Do you help guests book flights?",
 
-        "10% discount": "How do I qualify for the 10% Air Peace discount?",
-        "10 percent": "How do I qualify for the 10% Air Peace discount?",
-        "discount": "How do I qualify for the 10% Air Peace discount?",
+        "10% discount":
+            "How do I qualify for the 10% Air Peace discount?",
 
-        "booking": "How do I make a reservation?",
-        "reserve": "How do I make a reservation?",
-        "reservation": "How do I make a reservation?",
+        "10 percent":
+            "How do I qualify for the 10% Air Peace discount?",
 
-        "cancel": "Can I cancel my booking?",
-        "cancellation": "What is the cancellation policy?",
+        "discount":
+            "How do I qualify for the 10% Air Peace discount?",
 
-        "membership": "Are there any special offers or discounts?",
-        "member": "Are there any special offers or discounts?"
+        "booking":
+            "How do I make a reservation?",
+
+        "reserve":
+            "How do I make a reservation?",
+
+        "reservation":
+            "How do I make a reservation?",
+
+        "cancel":
+            "Can I cancel my booking?",
+
+        "cancellation":
+            "What is the cancellation policy?",
+
+        "membership":
+            "Are there any special offers or discounts?",
+
+        "member":
+            "Are there any special offers or discounts?",
     }
 
     for keyword, faq_question in faq_keywords.items():
@@ -1035,7 +1039,7 @@ def search_jahz_hotel_faq(customer_question):
                 if faq_question in category["faq"]:
 
                     return (
-                        f"JAHZ Empire Hotel & Suites\n\n"
+                        "JAHZ Empire Hotel & Suites\n\n"
                         f"Question: {faq_question}\n"
                         f"Answer: {category['faq'][faq_question]}"
                     )
@@ -1169,7 +1173,6 @@ def recommend_jahz_hotel_service(request):
         for keyword in service_keywords:
 
             if keyword in request_lower:
-
                 matches.append(service_key)
                 break
 
@@ -1228,4 +1231,3 @@ def create_jahz_hotel_enquiry(customer_request):
         "A JAHZ Empire Hotel & Suites team member should review "
         "the enquiry and contact the customer with the appropriate response."
     )
-```

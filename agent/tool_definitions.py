@@ -1,915 +1,699 @@
+# ============================================================
+# OPENAI TOOL DEFINITIONS
+# ============================================================
+
 TOOLS = [
-    # ============================================================
-    # GENERAL TOOLS
-    # ============================================================
 
-    {
-        "type": "function",
-        "name": "calculator",
-        "description": "Perform a mathematical calculation.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "number1": {"type": "number"},
-                "number2": {"type": "number"},
-                "operation": {
-                    "type": "string",
-                    "enum": ["+", "-", "*", "/"],
-                },
-            },
-            "required": ["number1", "number2", "operation"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "current_time",
-        "description": "Get the current local time.",
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "weather",
-        "description": "Get current weather information for Lagos.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "city": {"type": "string"},
-            },
-            "required": ["city"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "web_search",
-        "description": "Search the internet for current or recent information.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "query": {"type": "string"},
-                "max_results": {
-                    "type": "integer",
-                    "minimum": 1,
-                    "maximum": 5,
-                },
-            },
-            "required": ["query"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "save_note",
-        "description": "Save information that the user specifically asks the AI to remember.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "note": {"type": "string"},
-            },
-            "required": ["note"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "read_notes",
-        "description": "Read information previously saved in the AI agent's notes.",
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "delete_note",
-        "description": "Delete a saved note when the user asks to forget or remove it.",
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "note": {"type": "string"},
-            },
-            "required": ["note"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "list_tools",
-        "description": "Tell the user what tools and capabilities the AI agent currently has.",
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "additionalProperties": False,
-        },
-    },
-
-    # ============================================================
+    # ========================================================
     # VERIFIED AGENTS AND HOMES
-    # COMPANY INFORMATION
-    # ============================================================
+    # ========================================================
 
     {
         "type": "function",
-        "name": "get_company_information",
-        "description": (
-            "Provide general information about Verified Agents and Homes, "
-            "including its name, tagline, description, purpose, and company information."
-        ),
+        "name": "get_shortlet_faq",
+        "description": "Get frequently asked questions about short-let accommodation.",
         "parameters": {
             "type": "object",
             "properties": {},
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
+
     {
         "type": "function",
-        "name": "get_company_services",
-        "description": (
-            "List the services provided by Verified Agents and Homes, "
-            "including property verification, document search and verification, "
-            "building approval verification, agent verification, and short-let verification."
-        ),
+        "name": "get_car_hire_faq",
+        "description": "Get frequently asked questions about car hire.",
         "parameters": {
             "type": "object",
             "properties": {},
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
+
     {
         "type": "function",
-        "name": "get_company_mission",
-        "description": "Provide the mission of Verified Agents and Homes.",
+        "name": "get_verification_faq",
+        "description": "Get frequently asked questions about verification.",
         "parameters": {
             "type": "object",
             "properties": {},
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
+
     {
         "type": "function",
-        "name": "get_company_vision",
-        "description": "Provide the vision of Verified Agents and Homes.",
+        "name": "get_shortlet_house_rules",
+        "description": "Get short-let house rules.",
         "parameters": {
             "type": "object",
             "properties": {},
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
+
     {
         "type": "function",
-        "name": "get_company_values",
-        "description": "Provide the core values of Verified Agents and Homes.",
+        "name": "get_combined_booking_faq",
+        "description": "Get combined booking frequently asked questions.",
         "parameters": {
             "type": "object",
             "properties": {},
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "get_company_story",
-        "description": "Provide the story and background of Verified Agents and Homes.",
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "get_company_commitment",
-        "description": "Provide the commitment and customer-safety principles of Verified Agents and Homes.",
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
 
-    # ============================================================
-    # PROPERTY TOOLS
-    # ============================================================
-
-    {
-        "type": "function",
-        "name": "search_property",
-        "description": (
-            "Search for a property using its Property ID. "
-            "Return basic property information such as location, property type, "
-            "category, and overall property status. "
-            "Do not use this when the user specifically asks for documents."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "verify_property",
-        "description": (
-            "Verify a property using its Property ID. "
-            "Use this when the user wants the overall verification status "
-            "of a property or wants to know whether the property is verified."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "search_property_documents",
-        "description": (
-            "Search and list the individual document titles recorded for a property. "
-            "Use this whenever the user asks to list, search, show, or see property documents."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "verify_property_documents",
-        "description": (
-            "Verify the documents recorded for a property. "
-            "Use this when the user specifically asks whether property documents are verified."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "search_land_documents",
-        "description": (
-            "Search and list land documents recorded for a property using its Property ID."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "verify_land_documents",
-        "description": (
-            "Verify land documents recorded for a property using its Property ID."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "search_house_documents",
-        "description": (
-            "Search and list house documents recorded for a property using its Property ID."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "verify_house_documents",
-        "description": (
-            "Verify house documents recorded for a property using its Property ID."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "search_location",
-        "description": (
-            "Search and recognize locations within Lagos State and return "
-            "the relevant location information available in the Verified Agents and Homes data."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "location": {
-                    "type": "string",
-                    "description": "The Lagos State location, town, district, or LGA to search.",
-                },
-            },
-            "required": ["location"],
-            "additionalProperties": False,
-        },
-    },
-
-    # ============================================================
-    # SHORT-LET TOOLS
-    # ============================================================
-
-    {
-        "type": "function",
-        "name": "verify_shortlet_address",
-        "description": (
-            "Verify the address information recorded for a short-let property "
-            "using its Property ID."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "verify_shortlet_owner",
-        "description": (
-            "Check the recorded verification information relating to the owner "
-            "of a short-let property using its Property ID."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "verify_shortlet_manager",
-        "description": (
-            "Check the recorded verification information relating to the manager "
-            "of a short-let property using its Property ID."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "get_shortlet_current_look",
-        "description": (
-            "Check the latest recorded current-look/update information for a short-let property. "
-            "Use this when a customer wants to know whether the short-let's current condition "
-            "or appearance has been recently updated."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "get_shortlet_reports",
-        "description": (
-            "Check reports or reported issues recorded against a short-let property."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "property_id": {"type": "string"},
-            },
-            "required": ["property_id"],
-            "additionalProperties": False,
-        },
-    },
-
-    # ============================================================
-    # VERIFIED AGENTS AND HOMES
-    # AGENT TOOLS
-    # ============================================================
-
-    {
-        "type": "function",
-        "name": "search_agent",
-        "description": (
-            "Search for a Verified Agents and Homes real estate agent using the Agent ID. "
-            "Return the agent's recorded basic information and verification information."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "agent_id": {"type": "string"},
-            },
-            "required": ["agent_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "search_agent_by_name",
-        "description": (
-            "Search for a Verified Agents and Homes real estate agent by the agent's "
-            "name or agency name. Use this when the customer does not provide an Agent ID."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "name": {
-                    "type": "string",
-                    "description": "The agent's name or agency name.",
-                },
-            },
-            "required": ["name"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "verify_agent",
-        "description": (
-            "Verify a real estate agent using the Agent ID. "
-            "Return the recorded verification status, identity document status, "
-            "and license status. Also remind the customer that the monthly "
-            "VAH verification number must be checked before any transaction."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "agent_id": {"type": "string"},
-            },
-            "required": ["agent_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "search_agent_documents",
-        "description": (
-            "Search and list documents recorded for a real estate agent using the Agent ID."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "agent_id": {"type": "string"},
-            },
-            "required": ["agent_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "verify_agent_documents",
-        "description": (
-            "Verify documents recorded for a real estate agent using the Agent ID."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "agent_id": {"type": "string"},
-            },
-            "required": ["agent_id"],
-            "additionalProperties": False,
-        },
-    },
-
-    # ============================================================
-    # MONTHLY AGENT UPDATE TOOLS
-    # ============================================================
-
-    {
-        "type": "function",
-        "name": "get_agent_monthly_update",
-        "description": (
-            "Check the latest monthly update recorded for a Verified Agents and Homes agent. "
-            "Use this when the customer asks whether the agent's monthly verification information "
-            "is current or wants the latest update."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "agent_id": {"type": "string"},
-            },
-            "required": ["agent_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "get_agent_reports",
-        "description": (
-            "Check reports recorded against a Verified Agents and Homes agent."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "agent_id": {"type": "string"},
-            },
-            "required": ["agent_id"],
-            "additionalProperties": False,
-        },
-    },
-
-    # ============================================================
-    # MONTHLY VAH VERIFICATION NUMBER
-    # ============================================================
-
-    {
-        "type": "function",
-        "name": "get_vah_verification_number",
-        "description": (
-            "Retrieve the current VAH verification number recorded for a real estate agent. "
-            "The VAH verification number is separate from the Agent ID and changes monthly. "
-            "Use this when a customer asks for an agent's verification number, current verification "
-            "number, monthly verification number, or wants to confirm that an agent's number is current. "
-            "Always remind the customer to check the current Verified Agents and Homes database/platform "
-            "immediately before transacting or paying an agent. Never tell the customer to rely on an old number."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "agent_id": {"type": "string"},
-            },
-            "required": ["agent_id"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "get_verification_statuses",
-        "description": (
-            "List the verification statuses used by Verified Agents and Homes "
-            "and explain what they mean."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "additionalProperties": False,
-        },
-    },
     {
         "type": "function",
         "name": "get_payment_safety_guidance",
-        "description": (
-            "Provide safety guidance for customers before paying or transacting "
-            "with a real estate agent, including checking the current VAH verification "
-            "number and latest verification status."
-        ),
+        "description": "Get payment safety guidance from Verified Agents and Homes.",
         "parameters": {
             "type": "object",
             "properties": {},
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
 
-    # ============================================================
-    # DEWS AND AIRE NIG. LTD.
-    # ============================================================
+    {
+        "type": "function",
+        "name": "get_all_faqs",
+        "description": "Get all available Verified Agents and Homes FAQs.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "type": "function",
+        "name": "search_faq",
+        "description": "Search Verified Agents and Homes FAQs.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": "The customer's FAQ search question."
+                },
+                "section": {
+                    "type": ["string", "null"],
+                    "description": "Optional FAQ section."
+                },
+                "limit": {
+                    "type": "integer",
+                    "description": "Maximum number of results.",
+                    "minimum": 1,
+                    "maximum": 20
+                }
+            },
+            "required": ["query"],
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "type": "function",
+        "name": "get_faq_answer",
+        "description": "Get the best FAQ answer for a customer question.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "question": {
+                    "type": "string",
+                    "description": "Customer question."
+                },
+                "section": {
+                    "type": ["string", "null"],
+                    "description": "Optional FAQ section."
+                }
+            },
+            "required": ["question"],
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "type": "function",
+        "name": "get_faq_categories",
+        "description": "Get available Verified Agents and Homes FAQ categories.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "section": {
+                    "type": ["string", "null"],
+                    "description": "Optional FAQ section."
+                }
+            },
+            "additionalProperties": False
+        }
+    },
+
+
+    # ========================================================
+    # DEWS AND AIRE
+    # ========================================================
+
+    {
+        "type": "function",
+        "name": "get_dews_aire_company_info",
+        "description": "Get general company information about Dews and Aire Nig. Ltd.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False
+        }
+    },
 
     {
         "type": "function",
         "name": "get_dews_aire_services",
-        "description": (
-            "List the services provided by Dews and Aire Nig. Ltd., including "
-            "Architect / Interior Designer, Construction, Construction / Project Supervision, "
-            "Property Management, and Short-let Booking."
-        ),
+        "description": "Get all Dews and Aire Nig. Ltd. services.",
         "parameters": {
             "type": "object",
             "properties": {},
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
+
     {
         "type": "function",
         "name": "get_dews_aire_service",
-        "description": (
-            "Provide information about a specific service offered by Dews and Aire Nig. Ltd."
-        ),
+        "description": "Get information about a specific Dews and Aire service.",
         "parameters": {
             "type": "object",
             "properties": {
                 "service": {
                     "type": "string",
-                    "description": "The Dews and Aire service the customer is asking about.",
-                },
+                    "description": "The Dews and Aire service to ask about."
+                }
             },
             "required": ["service"],
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
+
     {
         "type": "function",
         "name": "recommend_dews_aire_service",
-        "description": (
-            "Identify which Dews and Aire Nig. Ltd. service best matches the customer's request."
-        ),
+        "description": "Recommend an appropriate Dews and Aire service based on the customer's request.",
         "parameters": {
             "type": "object",
             "properties": {
                 "request": {
                     "type": "string",
-                    "description": "The customer's request or description of what they need.",
-                },
+                    "description": "What the customer is requesting or needs help with."
+                }
             },
             "required": ["request"],
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
+
+    {
+        "type": "function",
+        "name": "get_dews_aire_faq_category",
+        "description": "Get Dews and Aire FAQs for a specific category.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "category": {
+                    "type": "string",
+                    "description": "FAQ category."
+                }
+            },
+            "required": ["category"],
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "type": "function",
+        "name": "get_dews_aire_faqs",
+        "description": "Get all Dews and Aire FAQs.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "type": "function",
+        "name": "search_dews_aire_faq",
+        "description": "Search Dews and Aire FAQs using a customer's question.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "customer_question": {
+                    "type": "string",
+                    "description": "The customer's question."
+                }
+            },
+            "required": ["customer_question"],
+            "additionalProperties": False
+        }
+    },
+
     {
         "type": "function",
         "name": "create_dews_aire_enquiry",
-        "description": (
-            "Prepare a Dews and Aire Nig. Ltd. customer enquiry for human follow-up."
-        ),
+        "description": "Create a Dews and Aire customer enquiry.",
         "parameters": {
             "type": "object",
             "properties": {
                 "customer_request": {
                     "type": "string",
-                    "description": "The customer's full request for follow-up.",
-                },
+                    "description": "The customer's enquiry or request."
+                }
             },
             "required": ["customer_request"],
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
 
-    # ============================================================
+
+    # ========================================================
     # JAHZ EMPIRE HOTEL & SUITES
-    # ============================================================
+    # ========================================================
 
     {
         "type": "function",
         "name": "get_jahz_hotel_services",
-        "description": (
-            "List the services and facilities available at JAHZ Empire Hotel & Suites, "
-            "including hotel rooms and suites, events, bar and parties, swimming pool, "
-            "swimming training, gym, gym instructors, hotel membership, Air Peace flight "
-            "booking, and apartment or short-let accommodation."
-        ),
+        "description": "Get all JAHZ Empire Hotel and Suites services and facilities.",
         "parameters": {
             "type": "object",
             "properties": {},
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
+
     {
         "type": "function",
         "name": "get_jahz_hotel_service",
-        "description": (
-            "Provide information about a specific service or facility offered by JAHZ Empire Hotel & Suites."
-        ),
+        "description": "Get information about a specific JAHZ hotel service or facility.",
         "parameters": {
             "type": "object",
             "properties": {
                 "service": {
                     "type": "string",
-                    "description": "The JAHZ Empire Hotel & Suites service or facility.",
-                },
+                    "description": "The hotel service or facility."
+                }
             },
             "required": ["service"],
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
+
+    {
+        "type": "function",
+        "name": "get_jahz_hotel_faq",
+        "description": "Get frequently asked questions and answers about JAHZ Empire Hotel and Suites.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "type": "function",
+        "name": "search_jahz_hotel_faq",
+        "description": "Search JAHZ hotel FAQs for the customer's question.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "customer_question": {
+                    "type": "string",
+                    "description": "The customer's hotel question."
+                }
+            },
+            "required": ["customer_question"],
+            "additionalProperties": False
+        }
+    },
+
     {
         "type": "function",
         "name": "recommend_jahz_hotel_service",
-        "description": (
-            "Identify which JAHZ Empire Hotel & Suites service or facility best matches a customer's request."
-        ),
+        "description": "Recommend an appropriate JAHZ hotel service or facility.",
         "parameters": {
             "type": "object",
             "properties": {
                 "request": {
                     "type": "string",
-                    "description": "The customer's request or description of what they need.",
-                },
+                    "description": "What the customer needs or is requesting."
+                }
             },
             "required": ["request"],
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
+
     {
         "type": "function",
         "name": "create_jahz_hotel_enquiry",
-        "description": (
-            "Prepare a JAHZ Empire Hotel & Suites customer enquiry for human follow-up."
-        ),
+        "description": "Create a JAHZ Empire Hotel and Suites customer enquiry.",
         "parameters": {
             "type": "object",
             "properties": {
                 "customer_request": {
                     "type": "string",
-                    "description": "The customer's full request for hotel-team follow-up.",
-                },
+                    "description": "The customer's hotel enquiry or request."
+                }
             },
             "required": ["customer_request"],
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
 
-    # ============================================================
+
+    # ========================================================
     # LAGOS MOVESMART
-    # ============================================================
+    # ========================================================
 
     {
         "type": "function",
         "name": "get_movesmart_categories",
-        "description": (
-            "List the categories of incidents and public problems that can be reported "
-            "through Lagos MoveSmart."
-        ),
+        "description": "Get all Lagos MoveSmart report categories.",
         "parameters": {
             "type": "object",
             "properties": {},
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
+
     {
         "type": "function",
         "name": "get_movesmart_category",
-        "description": (
-            "Provide information about a specific Lagos MoveSmart reporting category."
-        ),
+        "description": "Get information about a specific Lagos MoveSmart category.",
         "parameters": {
             "type": "object",
             "properties": {
                 "category": {
                     "type": "string",
-                    "description": "The Lagos MoveSmart reporting category.",
-                },
+                    "description": "MoveSmart category."
+                }
             },
             "required": ["category"],
-            "additionalProperties": False,
-        },
+            "additionalProperties": False
+        }
     },
+
     {
         "type": "function",
         "name": "recommend_movesmart_category",
-        "description": (
-            "Identify the most appropriate Lagos MoveSmart reporting category "
-            "based on the user's description of a public problem or incident."
-        ),
+        "description": "Recommend the most appropriate MoveSmart reporting category.",
         "parameters": {
             "type": "object",
             "properties": {
-                "report": {
+                "report_description": {
                     "type": "string",
-                    "description": "The user's description of the incident or public problem.",
-                },
+                    "description": "Description of the problem the customer wants to report."
+                }
             },
-            "required": ["report"],
-            "additionalProperties": False,
-        },
+            "required": ["report_description"],
+            "additionalProperties": False
+        }
     },
+
+    {
+        "type": "function",
+        "name": "get_movesmart_faqs",
+        "description": "Get all Lagos MoveSmart FAQs.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "type": "function",
+        "name": "get_movesmart_faq_section",
+        "description": "Get Lagos MoveSmart FAQs for a specific section.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "section": {
+                    "type": "string",
+                    "description": "MoveSmart FAQ section."
+                }
+            },
+            "required": ["section"],
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "type": "function",
+        "name": "get_movesmart_faq",
+        "description": "Get an answer to a Lagos MoveSmart FAQ question.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "question": {
+                    "type": "string",
+                    "description": "The customer's question."
+                }
+            },
+            "required": ["question"],
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "type": "function",
+        "name": "answer_movesmart_question",
+        "description": "Answer a Lagos MoveSmart question using available FAQ and reporting guidance.",
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "question": {
+                    "type": "string",
+                    "description": "The customer's question."
+                }
+            },
+            "required": ["question"],
+            "additionalProperties": False
+        }
+    },
+
     {
         "type": "function",
         "name": "create_movesmart_report",
-        "description": (
-            "Create a Lagos MoveSmart incident report from information supplied by the user."
-        ),
+        "description": "Create a Lagos MoveSmart incident report.",
         "parameters": {
             "type": "object",
             "properties": {
                 "category": {
                     "type": "string",
-                    "description": "The incident category.",
+                    "description": "Report category."
                 },
                 "description": {
                     "type": "string",
-                    "description": "A description of the incident.",
+                    "description": "Description of the problem."
                 },
                 "location": {
                     "type": "string",
-                    "description": "Where the incident occurred.",
+                    "description": "Location of the incident."
                 },
-            },
-            "required": ["category", "description", "location"],
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "get_movesmart_report_statuses",
-        "description": (
-            "List the statuses used to track Lagos MoveSmart reports."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {},
-            "additionalProperties": False,
-        },
-    },
-    {
-        "type": "function",
-        "name": "request_movesmart_evidence",
-        "description": (
-            "Request evidence or supporting information for a Lagos MoveSmart report."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "report_id": {
+                "date_time": {
                     "type": "string",
-                    "description": "The Lagos MoveSmart report ID.",
+                    "description": "Date and time of the incident."
                 },
                 "evidence": {
                     "type": "string",
-                    "description": "The evidence or supporting information.",
-                },
+                    "description": "Evidence details, if available."
+                }
             },
-            "required": ["report_id", "evidence"],
-            "additionalProperties": False,
-        },
+            "required": [
+                "category",
+                "description",
+                "location",
+                "date_time"
+            ],
+            "additionalProperties": False
+        }
     },
+
+    {
+        "type": "function",
+        "name": "get_movesmart_report_statuses",
+        "description": "Get available Lagos MoveSmart report statuses.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "type": "function",
+        "name": "request_movesmart_evidence",
+        "description": "Request evidence for a Lagos MoveSmart report.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "type": "function",
+        "name": "get_movesmart_reward_information",
+        "description": "Get information about Lagos MoveSmart reporting rewards.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False
+        }
+    },
+
+    {
+        "type": "function",
+        "name": "get_movesmart_emergency_guidance",
+        "description": "Get Lagos MoveSmart emergency guidance.",
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False
+        }
+    },
+
     {
         "type": "function",
         "name": "create_movesmart_protected_information_request",
-        "description": (
-            "Create a protected-information request for a Lagos MoveSmart report "
-            "when the user needs sensitive information handled through the appropriate process."
-        ),
+        "description": "Create a Lagos MoveSmart request concerning protected information.",
         "parameters": {
             "type": "object",
             "properties": {
-                "report_id": {
+                "requested_information": {
                     "type": "string",
-                    "description": "The Lagos MoveSmart report ID.",
+                    "description": "The protected information being requested."
                 },
-                "request": {
+                "reason": {
                     "type": "string",
-                    "description": "The protected-information request.",
+                    "description": "Reason for requesting the protected information."
                 },
+                "authorization_documents": {
+                    "type": "string",
+                    "description": "Authorization documents or details, if available."
+                }
             },
-            "required": ["report_id", "request"],
-            "additionalProperties": False,
-        },
+            "required": [
+                "requested_information",
+                "reason"
+            ],
+            "additionalProperties": False
+        }
     },
+
     {
         "type": "function",
         "name": "create_movesmart_followup",
-        "description": (
-            "Create a follow-up request for an existing Lagos MoveSmart report."
-        ),
+        "description": "Create a follow-up concerning a Lagos MoveSmart report or request.",
         "parameters": {
             "type": "object",
             "properties": {
-                "report_id": {
+                "report_or_request": {
                     "type": "string",
-                    "description": "The Lagos MoveSmart report ID.",
-                },
-                "message": {
-                    "type": "string",
-                    "description": "The follow-up message or request.",
-                },
+                    "description": "The report or request that the customer wants to follow up on."
+                }
             },
-            "required": ["report_id", "message"],
-            "additionalProperties": False,
-        },
+            "required": ["report_or_request"],
+            "additionalProperties": False
+        }
     },
 ]
+
+
+# ============================================================
+# ASSISTANT-SPECIFIC TOOL GROUPS
+# ============================================================
+
+TOOL_NAMES_BY_ASSISTANT = {
+
+    # ========================================================
+    # VENUS
+    # ========================================================
+
+    "venus": {
+        "get_shortlet_faq",
+        "get_car_hire_faq",
+        "get_verification_faq",
+        "get_shortlet_house_rules",
+        "get_combined_booking_faq",
+        "get_payment_safety_guidance",
+        "get_all_faqs",
+        "search_faq",
+        "get_faq_answer",
+        "get_faq_categories",
+    },
+
+
+    # ========================================================
+    # DEWS
+    # ========================================================
+
+    "dews": {
+        "get_dews_aire_company_info",
+        "get_dews_aire_services",
+        "get_dews_aire_service",
+        "recommend_dews_aire_service",
+        "get_dews_aire_faq_category",
+        "get_dews_aire_faqs",
+        "search_dews_aire_faq",
+        "create_dews_aire_enquiry",
+    },
+
+
+    # ========================================================
+    # JAHZ
+    # ========================================================
+
+    "jahz": {
+        "get_jahz_hotel_services",
+        "get_jahz_hotel_service",
+        "get_jahz_hotel_faq",
+        "search_jahz_hotel_faq",
+        "recommend_jahz_hotel_service",
+        "create_jahz_hotel_enquiry",
+    },
+
+
+    # ========================================================
+    # LAGOS MOVESMART
+    # ========================================================
+
+    "movesmart": {
+        "get_movesmart_categories",
+        "get_movesmart_category",
+        "recommend_movesmart_category",
+        "get_movesmart_faqs",
+        "get_movesmart_faq_section",
+        "get_movesmart_faq",
+        "answer_movesmart_question",
+        "create_movesmart_report",
+        "get_movesmart_report_statuses",
+        "request_movesmart_evidence",
+        "get_movesmart_reward_information",
+        "get_movesmart_emergency_guidance",
+        "create_movesmart_protected_information_request",
+        "create_movesmart_followup",
+    },
+}
+
+
+# ============================================================
+# BUILD TOOL LISTS FOR EACH ASSISTANT
+# ============================================================
+
+TOOLS_BY_ASSISTANT = {}
+
+for assistant_name, tool_names in TOOL_NAMES_BY_ASSISTANT.items():
+    TOOLS_BY_ASSISTANT[assistant_name] = [
+        tool
+        for tool in TOOLS
+        if tool.get("name") in tool_names
+    ]

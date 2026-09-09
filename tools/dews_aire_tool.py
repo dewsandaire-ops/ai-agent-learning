@@ -1032,10 +1032,10 @@ def get_dews_aire_faqs():
 
     results = []
 
-    for faqs in DEWS_AIRE_FAQS.values():
+    for category_key, faqs in DEWS_AIRE_FAQS.items():
 
         category_name = (
-            category.replace("_", " ").title()
+            category_key.replace("_", " ").title()
         )
 
         results.append(
@@ -1129,7 +1129,7 @@ def search_dews_aire_faq(customer_question):
         if word not in stop_words and len(word) > 2
     }
 
-    for category, faqs in DEWS_AIRE_FAQS.items():
+    for faqs in DEWS_AIRE_FAQS.values():
 
         for faq in faqs:
 

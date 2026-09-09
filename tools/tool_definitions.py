@@ -1047,3 +1047,121 @@ TOOLS = [
         }
     },
 ]
+# ============================================================
+# ASSISTANT-SPECIFIC TOOL GROUPS
+# ============================================================
+
+TOOL_NAMES_BY_ASSISTANT = {
+
+    # --------------------------------------------------------
+    # VERIFIED AGENTS AND HOMES — VENUS
+    # --------------------------------------------------------
+    "venus": {
+        "get_company_information",
+        "get_company_services",
+        "get_company_mission",
+        "get_company_vision",
+        "get_company_values",
+        "get_company_story",
+        "get_company_commitment",
+
+        "search_property",
+        "verify_property",
+        "search_property_documents",
+        "verify_property_documents",
+        "search_land_documents",
+        "verify_land_documents",
+        "search_house_documents",
+        "verify_house_documents",
+        "search_location",
+
+        "verify_shortlet_address",
+        "verify_shortlet_owner",
+        "verify_shortlet_manager",
+        "get_shortlet_current_look",
+        "get_shortlet_reports",
+
+        "search_agent",
+        "search_agent_by_name",
+        "verify_agent",
+        "search_agent_documents",
+        "verify_agent_documents",
+        "get_agent_monthly_update",
+        "get_agent_reports",
+
+        "get_vah_verification_number",
+        "get_verification_statuses",
+        "get_payment_safety_guidance",
+
+        # FAQ tools
+        "get_shortlet_faq",
+        "get_car_hire_faq",
+        "get_verification_faq",
+        "get_shortlet_house_rules",
+        "get_combined_booking_faq",
+        "get_all_faqs",
+        "search_faq",
+        "get_faq_answer",
+        "get_faq_categories",
+    },
+
+    # --------------------------------------------------------
+    # DEWS AND AIRE — DEWS
+    # --------------------------------------------------------
+    "dews": {
+        "get_dews_aire_company_info",
+        "get_dews_aire_services",
+        "get_dews_aire_service",
+        "recommend_dews_aire_service",
+        "get_dews_aire_faq_category",
+        "get_dews_aire_faqs",
+        "search_dews_aire_faq",
+        "create_dews_aire_enquiry",
+    },
+
+    # --------------------------------------------------------
+    # JAHZ EMPIRE HOTEL & SUITES — JAHZ
+    # --------------------------------------------------------
+    "jahz": {
+        "get_jahz_hotel_services",
+        "get_jahz_hotel_service",
+        "get_jahz_hotel_faq",
+        "search_jahz_hotel_faq",
+        "recommend_jahz_hotel_service",
+        "create_jahz_hotel_enquiry",
+    },
+
+    # --------------------------------------------------------
+    # LAGOS MOVESMART — YOU
+    # --------------------------------------------------------
+    "movesmart": {
+        "get_movesmart_categories",
+        "get_movesmart_category",
+        "recommend_movesmart_category",
+        "get_movesmart_faqs",
+        "get_movesmart_faq_section",
+        "get_movesmart_faq",
+        "answer_movesmart_question",
+        "create_movesmart_report",
+        "get_movesmart_report_statuses",
+        "request_movesmart_evidence",
+        "get_movesmart_reward_information",
+        "get_movesmart_emergency_guidance",
+        "create_movesmart_protected_information_request",
+        "create_movesmart_followup",
+    },
+}
+
+
+# ============================================================
+# BUILD TOOL DEFINITIONS FOR EACH ASSISTANT
+# ============================================================
+
+TOOLS_BY_ASSISTANT = {}
+
+for assistant_name, tool_names in TOOL_NAMES_BY_ASSISTANT.items():
+    TOOLS_BY_ASSISTANT[assistant_name] = [
+        tool
+        for tool in TOOLS
+        if tool.get("name") in tool_names
+    ]
