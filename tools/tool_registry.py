@@ -6,10 +6,6 @@
 # ============================================================
 
 
-# ============================================================
-# DEWS AND AIRE
-# ============================================================
-
 from tools.dews_aire_tool import (
     create_dews_aire_enquiry,
     get_dews_aire_company_info,
@@ -20,12 +16,6 @@ from tools.dews_aire_tool import (
     recommend_dews_aire_service,
     search_dews_aire_faq,
 )
-
-
-# ============================================================
-# JAHZ EMPIRE HOTEL & SUITES
-# ============================================================
-
 from tools.jahz_hotel_tool import (
     create_jahz_hotel_enquiry,
     get_jahz_hotel_faq,
@@ -34,12 +24,6 @@ from tools.jahz_hotel_tool import (
     recommend_jahz_hotel_service,
     search_jahz_hotel_faq,
 )
-
-
-# ============================================================
-# LAGOS MOVESMART
-# ============================================================
-
 from tools.movesmart_tool import (
     answer_movesmart_question,
     create_movesmart_followup,
@@ -56,12 +40,6 @@ from tools.movesmart_tool import (
     recommend_movesmart_category,
     request_movesmart_evidence,
 )
-
-
-# ============================================================
-# VERIFIED AGENTS AND HOMES
-# ============================================================
-
 from tools.verified_agents_and_homes import (
     get_all_faqs,
     get_car_hire_faq,
