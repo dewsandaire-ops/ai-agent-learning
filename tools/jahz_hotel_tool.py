@@ -1202,6 +1202,158 @@ JAHZ_HOTEL_FAQ = {
     },
 
 
+    # ========================================================
+    # LOCATION, LANDMARKS & NEARBY ATTRACTIONS
+    # ========================================================
+
+    "airport_proximity": {
+        "question": "Is JAHZ Empire Hotel & Suites close to the airport?",
+        "answer": (
+            "No. JAHZ Empire Hotel & Suites is not close to Murtala Muhammed "
+            "International Airport. The hotel is located in Abijo along the "
+            "Lekki-Epe Expressway. Travel time to the airport can vary "
+            "significantly depending on traffic conditions."
+        ),
+    },
+
+    "nearest_airport": {
+        "question": "Which airport is closest to JAHZ Empire Hotel & Suites?",
+        "answer": (
+            "Murtala Muhammed International Airport is the main international "
+            "airport serving Lagos. However, JAHZ Empire Hotel & Suites is "
+            "not located close to the airport. Guests who need airport "
+            "transport arrangements should contact the hotel directly."
+        ),
+    },
+
+    "nearby_landmarks": {
+        "question": "What landmark is JAHZ Empire Hotel & Suites close to?",
+        "answer": (
+            "JAHZ Empire Hotel & Suites is located around Kingdom Hall Bus Stop "
+            "in Abijo, along the Lekki-Epe Expressway. Other recognizable places "
+            "around the wider area include Novare Mall, LUFASI Nature Park, "
+            "Giwa Gardens and several other attractions along the Lekki-Epe corridor."
+        ),
+    },
+
+    "novare_mall": {
+        "question": "Is JAHZ Empire Hotel & Suites close to Novare Mall?",
+        "answer": (
+            "Yes. Novare Mall is one of the recognizable shopping landmarks "
+            "around the Lekki-Epe and Sangotedo area. Guests can contact the "
+            "hotel for the best directions from the hotel to the mall."
+        ),
+    },
+
+    "lufasi_nature_park": {
+        "question": "Is JAHZ Empire Hotel & Suites close to LUFASI Nature Park?",
+        "answer": (
+            "Yes. LUFASI Nature Park is one of the nearby attractions in the "
+            "area. It is a convenient recreational destination for guests who "
+            "want to enjoy nature and outdoor activities."
+        ),
+    },
+
+    "recreational_centres": {
+        "question": "Is JAHZ Empire Hotel & Suites close to any recreational centre?",
+        "answer": (
+            "Yes. The hotel is located within the Lekki-Epe corridor, where "
+            "guests can find several recreational and leisure attractions, "
+            "including LUFASI Nature Park and other entertainment destinations."
+        ),
+    },
+
+    "nearby_recreational_places": {
+        "question": "What recreational places are near JAHZ Empire Hotel & Suites?",
+        "answer": (
+            "Some recreational and leisure attractions within the wider area "
+            "include LUFASI Nature Park, Giwa Gardens, Lekki Conservation Centre, "
+            "beaches and other leisure destinations along the Lekki-Epe corridor."
+        ),
+    },
+
+    "nearby_beaches": {
+        "question": "Is JAHZ Empire Hotel & Suites close to a beach?",
+        "answer": (
+            "Yes. There are several beaches and beach resorts within the wider "
+            "Lekki area. Atican Beach is one of the recognizable beach destinations "
+            "in the area. Travel time may vary depending on traffic."
+        ),
+    },
+
+    "lekki_conservation_centre": {
+        "question": "Is JAHZ Empire Hotel & Suites close to Lekki Conservation Centre?",
+        "answer": (
+            "JAHZ Empire Hotel & Suites is within the wider Lekki area and "
+            "Lekki Conservation Centre can be reached from the hotel by road. "
+            "Travel time depends on traffic conditions."
+        ),
+    },
+
+    "giwa_gardens": {
+        "question": "Is JAHZ Empire Hotel & Suites close to Giwa Gardens?",
+        "answer": (
+            "Yes. Giwa Gardens is one of the leisure and entertainment "
+            "destinations within the wider Sangotedo and Lekki area. "
+            "Guests can ask the hotel for directions when planning a visit."
+        ),
+    },
+
+    "nearby_restaurants": {
+        "question": "Are there restaurants near JAHZ Empire Hotel & Suites?",
+        "answer": (
+            "Yes. There are restaurants and food outlets along the Lekki-Epe "
+            "corridor. JAHZ Empire Hotel & Suites also provides restaurant "
+            "services for guests."
+        ),
+    },
+
+    "easy_to_locate": {
+        "question": "Is JAHZ Empire Hotel & Suites easy to locate?",
+        "answer": (
+            "Yes. The hotel is located at 14 Gbadamosi Alomaja Street, "
+            "Kingdom Hall Bus Stop, Abijo, along the Lekki-Epe Expressway, Lagos. "
+            "Kingdom Hall Bus Stop and the Lekki-Epe Expressway are useful "
+            "landmarks when locating the hotel."
+        ),
+    },
+
+    "nearest_major_road": {
+        "question": "What major road is JAHZ Empire Hotel & Suites close to?",
+        "answer": (
+            "JAHZ Empire Hotel & Suites is located along the Lekki-Epe Expressway "
+            "in the Abijo area of Lagos."
+        ),
+    },
+
+    "nearby_shopping_centres": {
+        "question": "Are there shopping centres near JAHZ Empire Hotel & Suites?",
+        "answer": (
+            "Yes. Novare Mall is one of the recognizable shopping destinations "
+            "around the wider area. Guests can contact the hotel for directions "
+            "to nearby shopping centres."
+        ),
+    },
+
+    "nearby_tourist_attractions": {
+        "question": "Are there tourist attractions near JAHZ Empire Hotel & Suites?",
+        "answer": (
+            "Yes. Guests can visit several attractions within the wider Lekki-Epe "
+            "area, including LUFASI Nature Park, Giwa Gardens, Lekki Conservation "
+            "Centre, beaches and other leisure destinations."
+        ),
+    },
+
+    "good_location_for_lagos_attractions": {
+        "question": "Is JAHZ Empire Hotel & Suites a good location for visiting attractions in Lagos?",
+        "answer": (
+            "Yes. The hotel's location along the Lekki-Epe corridor provides "
+            "access to attractions and leisure destinations around Abijo, "
+            "Sangotedo and the wider Lekki area."
+        ),
+    },
+
+
     # --------------------------------------------------------
     # GENERAL ENQUIRIES
     # --------------------------------------------------------
@@ -1557,6 +1709,226 @@ def search_hotel_faq(query: str) -> list:
             "shortlet",
             "short-let",
         ],
+
+        # ----------------------------------------------------
+        # LOCATION SEARCH KEYWORDS
+        # ----------------------------------------------------
+
+        "airport": [
+            "airport",
+            "murtala",
+            "airport transfer",
+        ],
+
+        "murtala": [
+            "airport",
+            "murtala",
+            "airport transfer",
+        ],
+
+        "lagos": [
+            "lagos",
+            "attractions",
+            "location",
+        ],
+
+        "location": [
+            "location",
+            "landmark",
+            "address",
+            "area",
+            "road",
+        ],
+
+        "landmark": [
+            "landmark",
+            "location",
+            "novare",
+            "lufasi",
+            "giwa",
+        ],
+
+        "landmarks": [
+            "landmark",
+            "location",
+            "novare",
+            "lufasi",
+            "giwa",
+        ],
+
+        "novare": [
+            "novare",
+            "mall",
+            "shopping",
+        ],
+
+        "mall": [
+            "mall",
+            "shopping",
+            "novare",
+        ],
+
+        "shopping": [
+            "shopping",
+            "mall",
+            "novare",
+        ],
+
+        "lufasi": [
+            "lufasi",
+            "nature",
+            "park",
+            "recreation",
+        ],
+
+        "nature": [
+            "nature",
+            "park",
+            "lufasi",
+        ],
+
+        "park": [
+            "park",
+            "lufasi",
+            "recreation",
+        ],
+
+        "recreation": [
+            "recreation",
+            "recreational",
+            "leisure",
+            "entertainment",
+            "lufasi",
+        ],
+
+        "recreational": [
+            "recreation",
+            "recreational",
+            "leisure",
+            "entertainment",
+        ],
+
+        "leisure": [
+            "leisure",
+            "recreation",
+            "entertainment",
+            "attractions",
+        ],
+
+        "beach": [
+            "beach",
+            "beaches",
+            "atican",
+        ],
+
+        "beaches": [
+            "beach",
+            "beaches",
+            "atican",
+        ],
+
+        "atican": [
+            "atican",
+            "beach",
+            "beaches",
+        ],
+
+        "giwa": [
+            "giwa",
+            "gardens",
+            "entertainment",
+        ],
+
+        "gardens": [
+            "gardens",
+            "giwa",
+            "attractions",
+        ],
+
+        "conservation": [
+            "conservation",
+            "lekki conservation",
+            "nature",
+            "attractions",
+        ],
+
+        "tourist": [
+            "tourist",
+            "attractions",
+            "leisure",
+            "recreation",
+        ],
+
+        "attraction": [
+            "attraction",
+            "attractions",
+            "tourist",
+            "leisure",
+            "recreation",
+        ],
+
+        "attractions": [
+            "attraction",
+            "attractions",
+            "tourist",
+            "leisure",
+            "recreation",
+        ],
+
+        "restaurants": [
+            "restaurant",
+            "restaurants",
+            "dining",
+            "food",
+            "we are open 24 hours",
+        ],
+
+        "road": [
+            "road",
+            "expressway",
+            "lekki-epe",
+        ],
+
+        "expressway": [
+            "expressway",
+            "road",
+            "lekki-epe",
+        ],
+
+        "abijo": [
+            "abijo",
+            "location",
+            "address",
+            "kingdom hall",
+        ],
+
+        "kingdom": [
+            "kingdom hall",
+            "bus stop",
+            "abijo",
+        ],
+
+        "bus": [
+            "bus stop",
+            "kingdom hall",
+            "abijo",
+        ],
+
+        "nearby": [
+            "nearby",
+            "location",
+            "landmark",
+            "attractions",
+            "recreation",
+        ],
+
+        "near": [
+            "nearby",
+            "location",
+            "landmark",
+            "attractions",
+            "recreation",
+        ],
     }
 
     for faq_id, faq in JAHZ_HOTEL_FAQ.items():
@@ -1636,11 +2008,51 @@ def search_hotel_faq(query: str) -> list:
             "hotel membership",
             "air peace",
             "short let",
+
+            # Location phrases
+            "close to the airport",
+            "close to airport",
+            "nearest airport",
+            "near the airport",
+            "near airport",
+            "close to novare mall",
+            "near novare mall",
+            "close to lufasi",
+            "near lufasi",
+            "lufasi nature park",
+            "recreational centre",
+            "recreational center",
+            "recreational centres",
+            "recreational centers",
+            "recreational places",
+            "nearby attractions",
+            "tourist attractions",
+            "nearby tourist attractions",
+            "close to a beach",
+            "near a beach",
+            "nearby beaches",
+            "lekki conservation centre",
+            "lekki conservation center",
+            "giwa gardens",
+            "near restaurants",
+            "nearby restaurants",
+            "shopping centres",
+            "shopping centers",
+            "nearby shopping",
+            "easy to locate",
+            "major road",
+            "lekki epe expressway",
+            "kingdom hall bus stop",
+            "where is the hotel",
+            "hotel location",
         ]
 
         for phrase in phrases:
 
-            if phrase in normalized_query and phrase in normalized_searchable_text:
+            if (
+                phrase in normalized_query
+                and phrase in normalized_searchable_text
+            ):
                 score += 4
 
         if score > 0:
