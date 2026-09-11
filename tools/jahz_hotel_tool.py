@@ -1640,10 +1640,8 @@ def search_hotel_faq(query: str) -> list:
 
         for phrase in phrases:
 
-            if phrase in normalized_query:
-
-                if phrase in normalized_searchable_text:
-                    score += 4
+            if phrase in normalized_query and phrase in normalized_searchable_text:
+                score += 4
 
         if score > 0:
 
