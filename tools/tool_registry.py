@@ -6,8 +6,10 @@ from tools.dews_aire_tool import (
 )
 from tools.jahz_hotel_tool import (
     create_jahz_hotel_enquiry,
+    get_jahz_hotel_information,
     get_jahz_hotel_service,
     get_jahz_hotel_services,
+    get_jahz_room_categories,
     recommend_jahz_hotel_service,
 )
 from tools.movesmart_tool import (
@@ -109,6 +111,8 @@ TOOLS = {
     "create_movesmart_followup": create_movesmart_followup,
 
     # JAHZ Empire Hotel & Suites
+    "get_jahz_hotel_information": get_jahz_hotel_information,
+    "get_jahz_room_categories": get_jahz_room_categories,
     "get_jahz_hotel_services": get_jahz_hotel_services,
     "get_jahz_hotel_service": get_jahz_hotel_service,
     "recommend_jahz_hotel_service": recommend_jahz_hotel_service,

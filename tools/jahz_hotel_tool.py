@@ -1,3 +1,33 @@
+JAHZ_HOTEL_INFORMATION = {
+    "name": "JAHZ Empire Hotel & Suites",
+
+    "address": (
+        "14 Gbadamosi Alomaja Street, "
+        "Kingdom Hall Bus Stop, Abijo, "
+        "Lekki-Epe Expressway, Lagos."
+    ),
+
+    "phone": [
+        "+234 706 275 4478",
+        "+234 806 951 9327",
+    ],
+
+    "email": "info@jahzempiresuites.com",
+
+    "room_categories": {
+        "classic": (
+            "Classic: 1-Bedroom with kitchenette."
+        ),
+        "deluxe": (
+            "Deluxe: 1-Bedroom with spa bathtub."
+        ),
+        "executive": (
+            "Executive: 2-Bedrooms with kitchenette."
+        ),
+    },
+}
+
+
 JAHZ_HOTEL_SERVICES = {
     "rooms_and_suites": {
         "name": "Hotel Rooms & Suites",
@@ -90,6 +120,41 @@ JAHZ_HOTEL_SERVICES = {
 }
 
 
+def get_jahz_hotel_information():
+    """Return official information about JAHZ Empire Hotel & Suites."""
+
+    phone_numbers = ", ".join(
+        JAHZ_HOTEL_INFORMATION["phone"]
+    )
+
+    rooms = JAHZ_HOTEL_INFORMATION["room_categories"]
+
+    return (
+        "JAHZ Empire Hotel & Suites\n\n"
+        f"Address: {JAHZ_HOTEL_INFORMATION['address']}\n"
+        f"Phone: {phone_numbers}\n"
+        f"Email: {JAHZ_HOTEL_INFORMATION['email']}\n\n"
+        "Room Categories:\n"
+        f"- {rooms['classic']}\n"
+        f"- {rooms['deluxe']}\n"
+        f"- {rooms['executive']}"
+    )
+
+
+def get_jahz_room_categories():
+    """Return the official JAHZ Empire Hotel & Suites room categories."""
+
+    rooms = JAHZ_HOTEL_INFORMATION["room_categories"]
+
+    return (
+        "JAHZ Empire Hotel & Suites\n"
+        "Room Categories\n\n"
+        f"- {rooms['classic']}\n"
+        f"- {rooms['deluxe']}\n"
+        f"- {rooms['executive']}"
+    )
+
+
 def get_jahz_hotel_services():
     """Return all services and facilities offered by JAHZ Empire Hotel & Suites."""
 
@@ -110,10 +175,17 @@ def get_jahz_hotel_services():
 def get_jahz_hotel_service(service):
     """Return information about a specific JAHZ hotel service."""
 
-    search_term = service.strip().lower()
+    if not service:
+        return (
+            "Please provide the hotel service you want information about."
+        )
+
+    search_term = str(service).strip().lower()
 
     if not search_term:
-        return "Please provide the hotel service you want information about."
+        return (
+            "Please provide the hotel service you want information about."
+        )
 
     for service_data in JAHZ_HOTEL_SERVICES.values():
         name = service_data["name"].lower()
@@ -124,21 +196,24 @@ def get_jahz_hotel_service(service):
             or search_term in description
         ):
             return (
-                f"JAHZ Empire Hotel & Suites\n"
+                "JAHZ Empire Hotel & Suites\n"
                 f"Service: {service_data['name']}\n"
                 f"Description: {service_data['description']}"
             )
 
     return (
-        f"No JAHZ Empire Hotel & Suites service was found matching "
-        f"'{service}'."
+        "No JAHZ Empire Hotel & Suites service was found "
+        f"matching '{service}'."
     )
 
 
 def recommend_jahz_hotel_service(request):
     """Identify the JAHZ hotel service that best matches a customer request."""
 
-    request_lower = request.strip().lower()
+    if not request:
+        return "Please describe what you need help with."
+
+    request_lower = str(request).strip().lower()
 
     if not request_lower:
         return "Please describe what you need help with."
@@ -152,6 +227,13 @@ def recommend_jahz_hotel_service(request):
             "hotel room",
             "hotel rooms",
             "accommodation",
+            "classic",
+            "deluxe",
+            "delux",
+            "executive",
+            "bedroom",
+            "kitchenette",
+            "spa bathtub",
         ],
 
         "room_booking": [
@@ -161,6 +243,7 @@ def recommend_jahz_hotel_service(request):
             "reserve a room",
             "reservation",
             "hotel booking",
+            "book accommodation",
         ],
 
         "events": [
@@ -252,9 +335,10 @@ def recommend_jahz_hotel_service(request):
 
     if not matches:
         return (
-            "I can help with JAHZ Empire Hotel & Suites services and facilities. "
-            "Please tell me what you need, such as a room booking, event, gym, "
-            "swimming pool, membership, short-let accommodation, or Air Peace flight."
+            "I can help with JAHZ Empire Hotel & Suites services and "
+            "facilities. Please tell me what you need, such as a room "
+            "booking, event, gym, swimming pool, membership, "
+            "short-let accommodation, or Air Peace flight."
         )
 
     unique_matches = []
@@ -282,7 +366,13 @@ def recommend_jahz_hotel_service(request):
 def create_jahz_hotel_enquiry(customer_request):
     """Prepare a JAHZ hotel customer enquiry for human follow-up."""
 
-    request = customer_request.strip()
+    if not customer_request:
+        return (
+            "No customer request was provided. "
+            "Please provide the customer's request."
+        )
+
+    request = str(customer_request).strip()
 
     if not request:
         return (

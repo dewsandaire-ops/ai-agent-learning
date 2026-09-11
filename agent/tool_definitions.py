@@ -682,7 +682,38 @@ TOOLS = [
     # ============================================================
     # JAHZ EMPIRE HOTEL & SUITES
     # ============================================================
-
+    {
+        "type": "function",
+        "name": "get_jahz_hotel_information",
+        "description": (
+            "Provide the official basic information for JAHZ Empire Hotel & Suites, "
+            "including the hotel name, address, phone numbers, email address, "
+            "and available room categories. Use this tool when the customer asks "
+            "for the hotel address, location, contact details, phone number, email, "
+            "or general hotel information."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
+    {
+        "type": "function",
+        "name": "get_jahz_room_categories",
+        "description": (
+            "Provide the official room categories available at JAHZ Empire Hotel & Suites, "
+            "including the Classic, Deluxe, and Executive room categories and their "
+            "available bedroom, kitchenette, or spa bathtub details. Use this tool "
+            "when the customer asks what types of rooms are available or asks about "
+            "a specific JAHZ room category."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
     {
         "type": "function",
         "name": "get_jahz_hotel_services",
@@ -983,6 +1014,10 @@ JAHZ_TOOL_NAMES = {
     "read_notes",
     "delete_note",
     "list_tools",
+
+    # JAHZ Empire Hotel & Suites
+    "get_jahz_hotel_information",
+    "get_jahz_room_categories",
     "get_jahz_hotel_services",
     "get_jahz_hotel_service",
     "recommend_jahz_hotel_service",
