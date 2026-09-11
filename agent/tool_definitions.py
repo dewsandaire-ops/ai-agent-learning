@@ -913,3 +913,114 @@ TOOLS = [
         },
     },
 ]
+# ============================================================
+# TOOLS AVAILABLE TO EACH ASSISTANT
+# ============================================================
+
+VENUS_TOOL_NAMES = {
+    "calculator",
+    "current_time",
+    "weather",
+    "web_search",
+    "save_note",
+    "read_notes",
+    "delete_note",
+    "list_tools",
+    "get_company_information",
+    "get_company_services",
+    "get_company_mission",
+    "get_company_vision",
+    "get_company_values",
+    "get_company_story",
+    "get_company_commitment",
+    "search_property",
+    "verify_property",
+    "search_property_documents",
+    "verify_property_documents",
+    "search_land_documents",
+    "verify_land_documents",
+    "search_house_documents",
+    "verify_house_documents",
+    "search_location",
+    "verify_shortlet_address",
+    "verify_shortlet_owner",
+    "verify_shortlet_manager",
+    "get_shortlet_current_look",
+    "get_shortlet_reports",
+    "search_agent",
+    "search_agent_by_name",
+    "verify_agent",
+    "search_agent_documents",
+    "verify_agent_documents",
+    "get_agent_monthly_update",
+    "get_agent_reports",
+    "get_vah_verification_number",
+    "get_verification_statuses",
+    "get_payment_safety_guidance",
+}
+
+DEWS_TOOL_NAMES = {
+    "calculator",
+    "current_time",
+    "weather",
+    "web_search",
+    "save_note",
+    "read_notes",
+    "delete_note",
+    "list_tools",
+    "get_dews_aire_services",
+    "get_dews_aire_service",
+    "recommend_dews_aire_service",
+    "create_dews_aire_enquiry",
+}
+
+JAHZ_TOOL_NAMES = {
+    "calculator",
+    "current_time",
+    "weather",
+    "web_search",
+    "save_note",
+    "read_notes",
+    "delete_note",
+    "list_tools",
+    "get_jahz_hotel_services",
+    "get_jahz_hotel_service",
+    "recommend_jahz_hotel_service",
+    "create_jahz_hotel_enquiry",
+}
+
+MOVESMART_TOOL_NAMES = {
+    "calculator",
+    "current_time",
+    "weather",
+    "web_search",
+    "save_note",
+    "read_notes",
+    "delete_note",
+    "list_tools",
+    "get_movesmart_categories",
+    "get_movesmart_category",
+    "recommend_movesmart_category",
+    "create_movesmart_report",
+    "get_movesmart_report_statuses",
+    "request_movesmart_evidence",
+    "create_movesmart_protected_information_request",
+    "create_movesmart_followup",
+}
+
+
+def _select_tools(tool_names):
+    """Return complete tool definitions matching the supplied names."""
+    return [
+        tool
+        for tool in TOOLS
+        if tool.get("name") in tool_names
+    ]
+
+
+TOOLS_BY_ASSISTANT = {
+    "venus": _select_tools(VENUS_TOOL_NAMES),
+    "dews": _select_tools(DEWS_TOOL_NAMES),
+    "jahz": _select_tools(JAHZ_TOOL_NAMES),
+    "movesmart": _select_tools(MOVESMART_TOOL_NAMES),
+}
