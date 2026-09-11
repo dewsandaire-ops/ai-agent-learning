@@ -1,4 +1,3 @@
-import json
 import urllib.parse
 import urllib.request
 
@@ -11,11 +10,9 @@ def web_search(query, max_results=5):
     if not query:
         return "Please provide a search query."
 
-    if max_results < 1:
-        max_results = 1
+    max_results = max(max_results, 1)
 
-    if max_results > 5:
-        max_results = 5
+    max_results = min(max_results, 5)
 
     try:
         encoded_query = urllib.parse.quote(query)

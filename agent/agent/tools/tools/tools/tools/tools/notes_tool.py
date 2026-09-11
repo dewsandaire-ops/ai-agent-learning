@@ -1,7 +1,6 @@
 import json
 import os
 
-
 NOTES_FILE = "agent_memory.json"
 
 

@@ -1,10 +1,22 @@
 from tools.calculator import calculator
+from tools.notes_tool import delete_note, read_notes, save_note
 from tools.time_tool import current_time
+from tools.tools_info import list_tools
 from tools.weather import weather
 from tools.web_search import web_search
-from tools.notes_tool import save_note, read_notes, delete_note
-from tools.tools_info import list_tools
 
+from tools.dews_aire_tool import (
+    get_dews_aire_information,
+    get_dews_aire_services,
+)
+from tools.jahz_hotel_tool import (
+    get_jahz_information,
+    get_jahz_services,
+)
+from tools.movesmart_tool import (
+    get_movesmart_information,
+    get_movesmart_services,
+)
 from tools.verified_agents_and_homes import (
     find_lagos_location,
     get_agent_monthly_update,
@@ -39,22 +51,6 @@ from tools.verified_agents_and_homes import (
     verify_shortlet_manager,
     verify_shortlet_owner,
 )
-
-from tools.dews_aire_tool import (
-    get_dews_aire_information,
-    get_dews_aire_services,
-)
-
-from tools.movesmart_tool import (
-    get_movesmart_information,
-    get_movesmart_services,
-)
-
-from tools.jahz_hotel_tool import (
-    get_jahz_information,
-    get_jahz_services,
-)
-
 
 TOOLS = {
     # ---------------------------------------------------------------

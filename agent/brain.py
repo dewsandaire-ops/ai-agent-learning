@@ -5,7 +5,6 @@ from openai import OpenAI
 from agent.tool_definitions import TOOLS_BY_ASSISTANT
 from tools.tool_registry import get_tool
 
-
 # ============================================================
 # ASSISTANT INSTRUCTIONS
 # ============================================================
@@ -149,7 +148,7 @@ def run_tool(tool_name, arguments):
     except (TypeError, ValueError) as error:
         return f"Tool error: {error}"
 
-    except Exception as error:
+    except Exception as error:  # noqa: BLE001
         return f"Tool error: {error}"
 
 
@@ -277,7 +276,7 @@ def ask_ai(client, message, assistant="venus"):
                 input=tool_outputs,
             )
 
-    except Exception as error:
+    except Exception as error:  # noqa: BLE001
         print("AI ERROR:", error)
 
         return (
