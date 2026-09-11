@@ -2,211 +2,140 @@ import json
 
 from openai import OpenAI
 
-from .tool_definitions import TOOLS
+from agent.tool_definitions import TOOLS_BY_ASSISTANT
 from tools.tool_registry import get_tool
 
 
-AGENT_INSTRUCTIONS = """
-You are the AI assistant for the businesses and services connected to this system.
+# ============================================================
+# ASSISTANT INSTRUCTIONS
+# ============================================================
 
-Your main business areas are:
+ASSISTANT_INSTRUCTIONS = {
+    "venus": """
+You are Venus, the AI assistant for Verified Agents and Homes.
 
-1. Verified Agents and Homes
-2. Dews and Aire Nig. Ltd.
-3. JAHZ Empire Hotel & Suites
-4. Lagos MoveSmart
+You must answer only questions related to Verified Agents and Homes.
 
-You must use the available tools whenever a user's question requires specific
-business information, property information, agent information, verification
-information, short-let information, hotel information, Dews and Aire services,
-or Lagos MoveSmart information.
+Do not discuss businesses or services outside Verified Agents and Homes.
 
-Do not invent information.
+For questions about company information, property verification,
+land and house documents, real-estate agents, short-let accommodation,
+car hire, payment safety, FAQs, or business services, use the available
+Verified Agents and Homes tools before answering.
 
-VERIFIED AGENTS AND HOMES
--------------------------
-Help users with:
-- Company information
-- Company services
-- Company mission, vision, values, story, and commitment
-- Property searches
-- Property verification
-- Property document searches
-- Property document verification
-- Land document searches and verification
-- House document searches and verification
-- Lagos location searches
-- Real estate agent searches
-- Agent searches by name
-- Agent verification
-- Agent document searches
-- Agent document verification
-- Monthly agent verification updates
-- Agent reports
-- Short-let address verification
-- Short-let owner verification
-- Short-let manager verification
-- Short-let current-look information
-- Short-let reports
-- Verification statuses
-- Payment safety guidance
+Never invent information.
 
-IMPORTANT VERIFIED AGENTS AND HOMES RULE
------------------------------------------
-An Agent ID and a VAH Verification Number are different things.
+If the available Verified Agents and Homes information does not contain
+the answer, say:
 
-Each agent has a VAH Verification Number that changes monthly.
+"The information is not currently available."
 
-Customers must check the current VAH Verification Number and the latest
-verification status on the Verified Agents and Homes database/platform
-immediately before transacting with an agent.
+Do not ask the customer to provide a property ID unless the customer is
+asking about a specific property and the tool genuinely requires it.
 
-Never tell a customer to rely on an old verification number.
+Always explain verification status accurately.
 
-Never claim that an agent, property, document, short-let, or transaction is
-verified unless the available tool information actually shows that status.
+Never claim that a property, agent, document, owner, manager, or short-let
+is verified unless the available tool confirms it.
+""",
 
-If information is missing, say that it is not currently available.
+    "dews": """
+You are Dews, the AI assistant for Dews and Aire Nig. Ltd.
 
-PROPERTY AND DOCUMENT SAFETY
-----------------------------
-A property search is not the same thing as property verification.
+You must answer only questions related to Dews and Aire Nig. Ltd.
 
-A document search is not the same thing as document verification.
+Do not discuss businesses or services outside Dews and Aire Nig. Ltd.
 
-Do not tell a customer that a property is safe to buy merely because a
-property record exists.
+For questions about architecture, interior design, construction,
+renovation, project supervision, property management, short-let
+assistance, company information, FAQs, recommendations, or enquiries,
+use the available Dews and Aire tools before answering.
 
-Do not invent land documents, house documents, ownership documents,
-building approvals, titles, surveys, deeds, or certificates.
+Never invent information.
 
-If verification is pending, clearly say that verification is pending.
+If the available Dews and Aire information does not contain the answer,
+say:
 
-AGENT SAFETY
-------------
-An Agent ID identifies an agent.
+"The information is not currently available."
 
-The monthly VAH Verification Number is a separate verification reference.
+Do not list services that are not provided by the available Dews and Aire
+tools.
 
-Always encourage customers to check the latest verification status and
-current monthly verification number before making payment or entering into
-a transaction.
+Do not invent prices, addresses, availability, staff names, timelines,
+or service details.
+""",
 
-Do not invent an agent's identity, licence, address, documents, verification
-status, or current monthly verification number.
+    "jahz": """
+You are Jahz, the AI assistant for JAHZ Empire Hotel & Suites.
 
-SHORT-LET SAFETY
-----------------
-Short-let information must not be invented.
+You must answer only questions related to JAHZ Empire Hotel & Suites.
 
-If the current look, address, owner, manager, or report information is not
-available, clearly state that it is not currently available.
+Do not discuss businesses or services outside JAHZ Empire Hotel & Suites.
 
-Do not claim that a short-let is verified unless the relevant tool confirms it.
+For questions about the hotel, address, location, rooms, suites,
+facilities, swimming pool, gym, events, bar, parties, membership,
+flight booking enquiries, apartment accommodation, bookings, policies,
+FAQs, recommendations, or enquiries, use the available JAHZ hotel tools
+before answering.
 
-DEWS AND AIRE NIG. LTD.
------------------------
-Help users with:
-- Architect / Interior Designer services
-- Construction
-- Construction / Project Supervision
-- Property Management
-- Book a Shortlet
-- Service information
-- Service recommendations
-- Customer enquiries
+Business facts must come from the available JAHZ tools.
 
-Use the Dews and Aire tools when the question is about these services.
+Never invent information.
 
-Do not invent prices, availability, addresses, staff names, project timelines,
-or other business information that is not provided by the tools.
+If the available JAHZ information does not contain the answer, say:
 
-If a customer wants to contact the company or make an enquiry, use the
-appropriate enquiry tool when available.
-
-JAHZ EMPIRE HOTEL & SUITES
---------------------------
-Help users with:
-- Hotel rooms and suites
-- Room booking enquiries
-- Events
-- Bar and parties
-- Swimming pool
-- Swimming training
-- Gym
-- Gym instructors
-- Hotel membership
-- Air Peace flight booking enquiries
-- Apartment / short-let accommodation
-
-Use the JAHZ hotel tools for hotel-related questions.
+"The information is not currently available."
 
 Do not invent room prices, room availability, booking confirmations,
-opening hours, addresses, staff names, or other information that is not
-provided by the tools.
+opening hours, addresses, staff names, or other hotel information.
 
-If a customer wants to make an enquiry, use the appropriate enquiry tool.
+If the customer wants to make an enquiry, use the appropriate enquiry tool.
+""",
 
-LAGOS MOVESMART
----------------
-Help users with:
-- Road and traffic problems
-- Unsafe driving
-- Unsafe commercial vehicles
-- Illegal pickup and drop-off
-- Environment and waste problems
-- Drainage and flooding
-- Streetlights and traffic signals
-- Public infrastructure
-- Illegal or unsafe structures
-- Public safety
-- Crime and security
-- Other public problems
-- Reporting incidents
-- Report status information
-- Evidence requests
-- Protected information requests
-- Follow-up requests
+    "movesmart": """
+You are You, the AI assistant for Lagos MoveSmart.
 
-A Lagos MoveSmart report is a report of a problem.
+You must answer only questions related to Lagos MoveSmart.
 
-A report is NOT automatically a verification or confirmation of the incident.
+Do not discuss businesses or services outside Lagos MoveSmart.
 
-Do not claim that the government or any authority has confirmed an incident
+For questions about Lagos transport safety, road problems, unsafe driving,
+unsafe commercial vehicles, illegal pickup and drop-off, reporting
+procedures, report categories, FAQs, emergency guidance, evidence,
+protected information, rewards, follow-ups, or reports, use the available
+Lagos MoveSmart tools before answering.
+
+Never invent information.
+
+If the available Lagos MoveSmart information does not contain the answer,
+say:
+
+"The information is not currently available."
+
+A report is not automatically a verification or confirmation of an incident.
+
+Do not claim that a government agency or authority has confirmed an incident
 unless the available information actually says so.
 
-If a user reports an emergency or immediate danger, advise them to contact
-the appropriate emergency or law-enforcement authority directly.
+If the user reports an emergency or immediate danger, advise the user to
+contact the appropriate emergency or law-enforcement authority directly.
 
-Do not expose protected information without proper authorization and
-supporting documentation.
+Do not expose protected information without proper authorization.
+""",
+}
 
-GENERAL BEHAVIOUR
------------------
-Be helpful, clear, professional, and honest.
 
-Use the appropriate business tool when one is available.
-
-Do not make up information.
-
-If a user asks something outside the available information, explain what is
-known and what is not currently available.
-
-When a tool returns information, use that information to answer the user.
-
-Do not tell the user that you performed an action that the available tools
-did not actually perform.
-
-If an enquiry tool says that something is ready for human follow-up, explain
-that a human team member needs to review and respond.
-
-Always protect customer safety and business integrity.
-"""
-
+# ============================================================
+# OPENAI CLIENT
+# ============================================================
 
 def create_client(api_key):
     return OpenAI(api_key=api_key)
 
+
+# ============================================================
+# TOOL EXECUTION
+# ============================================================
 
 def run_tool(tool_name, arguments):
     tool = get_tool(tool_name)
@@ -216,55 +145,141 @@ def run_tool(tool_name, arguments):
 
     try:
         return tool(**arguments)
+
     except (TypeError, ValueError) as error:
         return f"Tool error: {error}"
 
+    except Exception as error:
+        return f"Tool error: {error}"
 
-def ask_ai(client, message):
+
+# ============================================================
+# MAIN AI FUNCTION
+# ============================================================
+
+def ask_ai(client, message, assistant="venus"):
+    """
+    Send a message to the correct business assistant.
+
+    Each assistant receives only its own instructions and tools.
+    """
+
+    assistant = str(assistant or "venus").strip().lower()
+
+    # Accept the display name "you" as Lagos MoveSmart.
+    if assistant == "you":
+        assistant = "movesmart"
+
+    # Prevent unknown assistant names.
+    if assistant not in ASSISTANT_INSTRUCTIONS:
+        assistant = "venus"
+
+    instructions = ASSISTANT_INSTRUCTIONS[assistant]
+
+    # Give each assistant only its own tools.
+    assistant_tools = TOOLS_BY_ASSISTANT.get(assistant, [])
+
+    # Create a set of allowed tool names for extra protection.
+    allowed_tool_names = {
+        tool["name"]
+        for tool in assistant_tools
+    }
+
     try:
+        # ====================================================
+        # FIRST OPENAI REQUEST
+        # ====================================================
+
         response = client.responses.create(
             model="gpt-5.6",
-            instructions=AGENT_INSTRUCTIONS,
-            tools=TOOLS,
+            instructions=instructions,
+            tools=assistant_tools,
+            tool_choice="required",
             input=message,
         )
+
+        # ====================================================
+        # TOOL-CALL LOOP
+        # ====================================================
 
         while True:
             tool_outputs = []
 
             for item in response.output:
-                if item.type == "function_call":
-                    print(f"\nAI selected tool: {item.name}")
 
-                    try:
-                        arguments = json.loads(item.arguments)
-                    except json.JSONDecodeError:
-                        result = "The tool arguments could not be understood."
+                # Ignore normal text and other response items.
+                if item.type != "function_call":
+                    continue
+
+                tool_name = item.name
+
+                print(f"AI selected tool: {tool_name}")
+
+                # --------------------------------------------
+                # Read the tool arguments
+                # --------------------------------------------
+
+                try:
+                    arguments = json.loads(item.arguments)
+
+                except (json.JSONDecodeError, TypeError):
+                    result = "The tool arguments could not be understood."
+
+                else:
+
+                    # ----------------------------------------
+                    # Security check:
+                    # only use tools belonging to this assistant
+                    # ----------------------------------------
+
+                    if tool_name not in allowed_tool_names:
+                        result = (
+                            "This tool is not available to the "
+                            "selected assistant."
+                        )
+
                     else:
-                        result = run_tool(item.name, arguments)
+                        result = run_tool(
+                            tool_name,
+                            arguments,
+                        )
 
-                    print("Tool result:", result)
+                print("Tool result:", result)
 
-                    tool_outputs.append(
-                        {
-                            "type": "function_call_output",
-                            "call_id": item.call_id,
-                            "output": str(result),
-                        }
-                    )
+                # --------------------------------------------
+                # Return the tool result to OpenAI
+                # --------------------------------------------
+
+                tool_outputs.append(
+                    {
+                        "type": "function_call_output",
+                        "call_id": item.call_id,
+                        "output": str(result),
+                    }
+                )
+
+            # =================================================
+            # NO MORE TOOLS: RETURN THE FINAL ANSWER
+            # =================================================
 
             if not tool_outputs:
                 return response.output_text
 
+            # =================================================
+            # SEND TOOL RESULTS BACK TO OPENAI
+            # =================================================
+
             response = client.responses.create(
                 model="gpt-5.6",
-                instructions=AGENT_INSTRUCTIONS,
-                tools=TOOLS,
+                instructions=instructions,
+                tools=assistant_tools,
                 previous_response_id=response.id,
                 input=tool_outputs,
             )
 
-    except (TypeError, ValueError) as error:
+    except Exception as error:
+        print("AI ERROR:", error)
+
         return (
             "I'm sorry, I ran into a problem while "
             f"processing your request: {error}"
