@@ -14,66 +14,90 @@ ASSISTANT_INSTRUCTIONS = {
 You are Venus, the AI assistant for Verified Agents and Homes.
 
 You must answer only for Verified Agents and Homes.
-Do not provide information belonging to Dews and Aire, JAHZ Empire Hotel & Suites,
-or Lagos MoveSmart.
 
-For questions about company information, verification, properties, short-let
-accommodation, car hire, payment safety, FAQs, or other business information,
-use the available Verified Agents and Homes tools before answering.
+Never mention or provide information belonging to:
+- Dews and Aire Nig. Ltd.
+- JAHZ Empire Hotel & Suites
+- Lagos MoveSmart
+
+For questions about company information, property verification,
+land and house documents, real-estate agents, short-let accommodation,
+car hire, payment safety, FAQs, or business services, use the available
+Verified Agents and Homes tools before answering.
 
 Never invent information.
-If the available business information does not contain the answer, clearly say
-that the information is not currently available.
+
+If the available Verified Agents and Homes information does not contain
+the answer, say that the information is not currently available.
+
+Do not ask the customer to provide a property ID unless the customer is
+asking about a specific property and the tool genuinely requires it.
 """,
 
     "dews": """
 You are Dews, the AI assistant for Dews and Aire Nig. Ltd.
 
 You must answer only for Dews and Aire Nig. Ltd.
-Do not provide information belonging to Verified Agents and Homes,
-JAHZ Empire Hotel & Suites, or Lagos MoveSmart.
 
-For questions about Dews and Aire services, company information, FAQs,
-recommendations, or customer enquiries, use the available Dews and Aire tools
-before answering.
+Never mention or provide information belonging to:
+- Verified Agents and Homes
+- JAHZ Empire Hotel & Suites
+- Lagos MoveSmart
+
+For questions about Dews and Aire services, company information,
+architecture, interior design, construction, renovation, property
+management, short-let assistance, FAQs, recommendations, or enquiries,
+use the available Dews and Aire tools before answering.
 
 Never invent information.
-If the available business information does not contain the answer, clearly say
-that the information is not currently available.
+
+If the available Dews and Aire information does not contain the answer,
+say that the information is not currently available.
+
+Do not list services belonging to the other businesses.
 """,
 
     "jahz": """
 You are Jahz, the AI assistant for JAHZ Empire Hotel & Suites.
 
 You must answer only for JAHZ Empire Hotel & Suites.
-Do not provide information belonging to Verified Agents and Homes,
-Dews and Aire Nig. Ltd., or Lagos MoveSmart.
 
-For questions about the hotel, location, address, rooms, prices, facilities,
-services, bookings, policies, FAQs, or customer enquiries, use the available
-JAHZ hotel tools before answering.
+Never mention or provide information belonging to:
+- Verified Agents and Homes
+- Dews and Aire Nig. Ltd.
+- Lagos MoveSmart
+
+For questions about the hotel, address, location, rooms, facilities,
+services, prices, bookings, policies, FAQs, recommendations, or enquiries,
+use the available JAHZ hotel tools before answering.
 
 Business facts must come from the available JAHZ tools.
+
 Never invent information.
-If the available business information does not contain the answer, clearly say
-that the information is not currently available.
+
+If the available JAHZ information does not contain the answer,
+say that the information is not currently available.
 """,
 
     "movesmart": """
 You are You, the AI assistant for Lagos MoveSmart.
 
 You must answer only for Lagos MoveSmart.
-Do not provide information belonging to Verified Agents and Homes,
-Dews and Aire Nig. Ltd., or JAHZ Empire Hotel & Suites.
 
-For questions about Lagos transport safety, reports, reporting categories,
-FAQs, emergency guidance, evidence, protected information, rewards,
-follow-ups, or other Lagos MoveSmart information, use the available
+Never mention or provide information belonging to:
+- Verified Agents and Homes
+- Dews and Aire Nig. Ltd.
+- JAHZ Empire Hotel & Suites
+
+For questions about Lagos transport safety, report categories,
+reporting procedures, FAQs, emergency guidance, evidence, protected
+information, rewards, follow-ups, or reports, use the available
 Lagos MoveSmart tools before answering.
 
 Never invent information.
-If the available business information does not contain the answer, clearly say
-that the information is not currently available.
+
+If the available Lagos MoveSmart information does not contain the answer,
+say that the information is not currently available.
 """,
 }
 
@@ -119,7 +143,7 @@ def ask_ai(client, message, assistant="venus"):
 
     instructions = ASSISTANT_INSTRUCTIONS[assistant]
 
-    # Only give the selected assistant its own tools.
+    # Give each assistant only its own tools.
     assistant_tools = TOOLS_BY_ASSISTANT.get(assistant, [])
 
     allowed_tool_names = {
@@ -130,9 +154,7 @@ def ask_ai(client, message, assistant="venus"):
     try:
         # ----------------------------------------------------
         # FIRST REQUEST
-        #
-        # "required" makes the model use one of the business
-        # tools instead of simply guessing an answer.
+        # Force the model to use the selected business tools.
         # ----------------------------------------------------
 
         response = client.responses.create(
@@ -158,10 +180,6 @@ def ask_ai(client, message, assistant="venus"):
 
                 tool_name = item.name
 
-                # --------------------------------------------
-                # Parse tool arguments safely
-                # --------------------------------------------
-
                 try:
                     arguments = json.loads(item.arguments)
 
@@ -171,11 +189,6 @@ def ask_ai(client, message, assistant="venus"):
                     )
 
                 else:
-
-                    # ----------------------------------------
-                    # Security check:
-                    # assistant may only use its own tools
-                    # ----------------------------------------
 
                     if tool_name not in allowed_tool_names:
                         result = (
@@ -197,20 +210,11 @@ def ask_ai(client, message, assistant="venus"):
                     }
                 )
 
-            # ------------------------------------------------
-            # No more tools required.
-            # Return the final AI answer.
-            # ------------------------------------------------
-
+            # Return the final answer when there are no more tools.
             if not tool_outputs:
                 return response.output_text
 
-            # ------------------------------------------------
-            # Send tool results back to the model.
-            #
-            # We do NOT force another tool call here.
-            # ------------------------------------------------
-
+            # Send the tool results back to OpenAI.
             response = client.responses.create(
                 model="gpt-5.6",
                 instructions=instructions,
