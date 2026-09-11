@@ -28,9 +28,14 @@ client = OpenAI(api_key=api_key)
 # ============================================================
 
 app = FastAPI(
-    title="Business AI Assistant System"
+    title="Business AI Assistant System",
+    version="1.0.0",
 )
 
+
+# ============================================================
+# CORS
+# ============================================================
 
 app.add_middleware(
     CORSMiddleware,
@@ -51,7 +56,7 @@ class ChatRequest(BaseModel):
 
 
 # ============================================================
-# WEBSITE DOMAIN ROUTING
+# WEBSITE ASSISTANT ROUTING
 # ============================================================
 
 WEBSITE_ASSISTANTS = {
@@ -71,14 +76,17 @@ WEBSITE_ASSISTANTS = {
 
 def get_assistant_from_website(request: Request):
     """
-    Identify the correct assistant from the website that
-    sent the chatbot request.
+    Identify the correct assistant from the website domain
+    that sent the chatbot request.
     """
 
     origin = request.headers.get("origin", "")
     referer = request.headers.get("referer", "")
 
     website_source = origin or referer
+
+    if not website_source:
+        return None
 
     website_source = (
         website_source
@@ -90,6 +98,30 @@ def get_assistant_from_website(request: Request):
     )
 
     return WEBSITE_ASSISTANTS.get(website_source)
+
+
+def normalize_assistant(assistant):
+    """
+    Normalize assistant names and display names.
+    """
+
+    if not assistant:
+        return None
+
+    assistant = str(assistant).strip().lower()
+
+    if assistant == "you":
+        return "movesmart"
+
+    if assistant in {
+        "venus",
+        "dews",
+        "jahz",
+        "movesmart",
+    }:
+        return assistant
+
+    return None
 
 
 # ============================================================
@@ -105,33 +137,66 @@ def home():
 
 
 # ============================================================
+# HEALTH CHECK ROUTE
+# ============================================================
+
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy",
+        "service": "Business AI Assistant System",
+    }
+
+
+# ============================================================
 # CHAT ROUTE
 # ============================================================
 
 @app.post("/chat")
 def chat(request_data: ChatRequest, request: Request):
 
-    # First identify the assistant from the website domain.
+    # --------------------------------------------------------
+    # First priority:
+    # identify the assistant from the website domain.
+    # --------------------------------------------------------
+
     website_assistant = get_assistant_from_website(request)
 
-    # If the website is recognized, trust the website routing.
-    # This prevents a website from accidentally using Venus.
+    # --------------------------------------------------------
+    # Second priority:
+    # use the assistant sent directly by the website/API.
+    # --------------------------------------------------------
+
+    requested_assistant = normalize_assistant(
+        request_data.assistant
+    )
+
+    # --------------------------------------------------------
+    # Select the correct assistant.
+    # --------------------------------------------------------
+
     if website_assistant:
         selected_assistant = website_assistant
 
-    # This supports direct API testing when no website origin exists.
-    elif request_data.assistant:
-        selected_assistant = request_data.assistant.strip().lower()
+    elif requested_assistant:
+        selected_assistant = requested_assistant
 
-    # Safe fallback for direct requests only.
     else:
         selected_assistant = "venus"
+
+    # --------------------------------------------------------
+    # Send the message to the selected assistant.
+    # --------------------------------------------------------
 
     answer = ask_ai(
         client,
         request_data.message,
         selected_assistant,
     )
+
+    # --------------------------------------------------------
+    # Return the answer and selected assistant.
+    # --------------------------------------------------------
 
     return {
         "answer": answer,
