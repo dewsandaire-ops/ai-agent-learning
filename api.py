@@ -40,17 +40,41 @@ WHATSAPP_ACCESS_TOKEN = os.getenv(
     "WHATSAPP_ACCESS_TOKEN"
 )
 
-WHATSAPP_PHONE_NUMBER_ID = os.getenv(
-    "WHATSAPP_PHONE_NUMBER_ID"
-)
 
-# The WhatsApp number initially uses Venus.
-# We can later add a menu so customers can choose
-# between Venus, Dews, Jahz, and MoveSmart.
-WHATSAPP_ASSISTANT = os.getenv(
-    "WHATSAPP_ASSISTANT",
-    "venus",
-)
+# ============================================================
+# WHATSAPP BUSINESS NUMBERS
+# ============================================================
+#
+# Each WhatsApp number belongs to ONE assistant only.
+#
+# Dews & Aire:
+# 08024981447 -> dews
+#
+# JAHZ Empire:
+# 07062754478 -> jahz
+# 08069519327 -> jahz
+#
+# Verified Agents & Homes:
+# 09062029300 -> venus
+#
+# Lagos MoveSmart:
+# 09062028300 -> movesmart
+#
+# No customer menu is used.
+# The WhatsApp number automatically determines
+# which assistant answers.
+# ============================================================
+
+WHATSAPP_NUMBER_ASSISTANTS = {
+    "2348024981447": "dews",
+
+    "2347062754478": "jahz",
+    "2348069519327": "jahz",
+
+    "2349062029300": "venus",
+
+    "2349062028300": "movesmart",
+}
 
 
 # ============================================================
@@ -154,6 +178,75 @@ def normalize_assistant(assistant):
         return assistant
 
     return None
+
+
+# ============================================================
+# NORMALIZE WHATSAPP PHONE NUMBER
+# ============================================================
+
+def normalize_phone_number(phone_number):
+    """
+    Convert Nigerian WhatsApp numbers into one consistent format.
+
+    Example:
+
+        08024981447
+        +2348024981447
+        2348024981447
+
+    all become:
+
+        2348024981447
+    """
+
+    if not phone_number:
+        return None
+
+    phone_number = str(phone_number).strip()
+
+    # Remove common formatting characters.
+    phone_number = (
+        phone_number
+        .replace("+", "")
+        .replace(" ", "")
+        .replace("-", "")
+        .replace("(", "")
+        .replace(")", "")
+    )
+
+    # Convert Nigerian local format.
+    if phone_number.startswith("0"):
+        phone_number = (
+            "234" + phone_number[1:]
+        )
+
+    return phone_number
+
+
+# ============================================================
+# GET ASSISTANT FROM WHATSAPP BUSINESS NUMBER
+# ============================================================
+
+def get_whatsapp_assistant(
+    display_phone_number,
+):
+    """
+    Select the assistant based ONLY on the WhatsApp
+    business number that received the message.
+
+    This keeps all four businesses completely separate.
+    """
+
+    normalized_number = normalize_phone_number(
+        display_phone_number
+    )
+
+    if not normalized_number:
+        return None
+
+    return WHATSAPP_NUMBER_ASSISTANTS.get(
+        normalized_number
+    )
 
 
 # ============================================================
@@ -293,10 +386,16 @@ async def verify_whatsapp_webhook(
 def send_whatsapp_message(
     recipient_phone,
     message,
+    phone_number_id,
 ):
     """
-    Send an outgoing WhatsApp text message through
-    the Meta WhatsApp Cloud API.
+    Send an outgoing WhatsApp text message.
+
+    phone_number_id is the ID of the WhatsApp business
+    number that received the customer's message.
+
+    This ensures the reply goes back through the SAME
+    WhatsApp business number.
     """
 
     if not WHATSAPP_ACCESS_TOKEN:
@@ -305,15 +404,15 @@ def send_whatsapp_message(
         )
         return False
 
-    if not WHATSAPP_PHONE_NUMBER_ID:
+    if not phone_number_id:
         print(
-            "WHATSAPP_PHONE_NUMBER_ID is not configured."
+            "WhatsApp phone number ID is missing."
         )
         return False
 
     url = (
         "https://graph.facebook.com/v26.0/"
-        f"{WHATSAPP_PHONE_NUMBER_ID}/messages"
+        f"{phone_number_id}/messages"
     )
 
     payload = {
@@ -345,13 +444,15 @@ def send_whatsapp_message(
     )
 
     try:
+
         with urllib.request.urlopen(
             request,
             timeout=30,
         ) as response:
 
-            response_body = response.read().decode(
-                "utf-8"
+            response_body = (
+                response.read()
+                .decode("utf-8")
             )
 
             print(
@@ -363,9 +464,12 @@ def send_whatsapp_message(
 
     except urllib.error.HTTPError as error:
 
-        error_body = error.read().decode(
-            "utf-8",
-            errors="replace",
+        error_body = (
+            error.read()
+            .decode(
+                "utf-8",
+                errors="replace",
+            )
         )
 
         print(
@@ -387,24 +491,36 @@ def send_whatsapp_message(
 
 
 # ============================================================
-# EXTRACT WHATSAPP TEXT MESSAGE
+# EXTRACT WHATSAPP MESSAGE
 # ============================================================
 
 def extract_whatsapp_message(data):
     """
-    Extract the sender's WhatsApp number and text message
-    from a Meta webhook payload.
+    Extract:
+
+    1. Customer's WhatsApp number
+    2. Customer's message
+    3. WhatsApp business phone number ID
+    4. WhatsApp business display phone number
+
+    from the Meta webhook payload.
 
     Returns:
 
-        (sender_phone, message_text)
+        (
+            sender_phone,
+            message_text,
+            phone_number_id,
+            display_phone_number,
+        )
 
     or:
 
-        (None, None)
+        (None, None, None, None)
     """
 
     try:
+
         entries = data.get(
             "entry",
             [],
@@ -422,6 +538,21 @@ def extract_whatsapp_message(data):
                 value = change.get(
                     "value",
                     {},
+                )
+
+                metadata = value.get(
+                    "metadata",
+                    {},
+                )
+
+                phone_number_id = metadata.get(
+                    "phone_number_id"
+                )
+
+                display_phone_number = (
+                    metadata.get(
+                        "display_phone_number"
+                    )
                 )
 
                 messages = value.get(
@@ -443,7 +574,7 @@ def extract_whatsapp_message(data):
                 )
 
                 # ------------------------------------------------
-                # We currently respond only to text messages.
+                # Text message
                 # ------------------------------------------------
 
                 if message_type == "text":
@@ -464,16 +595,21 @@ def extract_whatsapp_message(data):
                         return (
                             sender_phone,
                             message_text,
+                            phone_number_id,
+                            display_phone_number,
                         )
 
                 # ------------------------------------------------
-                # If the user sends an unsupported message type.
+                # Unsupported message type
                 # ------------------------------------------------
 
                 if sender_phone:
+
                     return (
                         sender_phone,
                         None,
+                        phone_number_id,
+                        display_phone_number,
                     )
 
     except Exception as error:
@@ -484,6 +620,8 @@ def extract_whatsapp_message(data):
         )
 
     return (
+        None,
+        None,
         None,
         None,
     )
@@ -500,26 +638,28 @@ async def whatsapp_webhook(
     """
     Receive incoming WhatsApp webhook events.
 
-    The flow is:
+    Each WhatsApp business number is connected
+    to its own AI assistant.
 
-    WhatsApp
+    Dews number
         ↓
-    Meta
+    Dews assistant
+
+    JAHZ number
         ↓
-    /webhook
+    Jahz assistant
+
+    Verified Agents number
         ↓
-    extract message
+    Venus assistant
+
+    Lagos MoveSmart number
         ↓
-    brain.py
-        ↓
-    selected AI assistant
-        ↓
-    Meta WhatsApp API
-        ↓
-    customer receives reply
+    MoveSmart assistant
     """
 
     try:
+
         data = await request.json()
 
     except Exception:
@@ -538,27 +678,103 @@ async def whatsapp_webhook(
     print(
         "========================================"
     )
+
     print(data)
+
     print()
 
     # --------------------------------------------------------
-    # Extract incoming WhatsApp message.
+    # Extract WhatsApp information.
     # --------------------------------------------------------
 
-    sender_phone, message_text = (
-        extract_whatsapp_message(data)
-    )
+    (
+        sender_phone,
+        message_text,
+        phone_number_id,
+        display_phone_number,
+    ) = extract_whatsapp_message(data)
 
     # --------------------------------------------------------
-    # Ignore webhook events that are not messages.
+    # Ignore events that are not incoming messages.
     # --------------------------------------------------------
 
     if not sender_phone:
 
         return {
             "status": "received",
-            "message": "No incoming message found.",
+            "message": (
+                "No incoming WhatsApp message found."
+            ),
         }
+
+    # --------------------------------------------------------
+    # Make sure Meta supplied the business number.
+    # --------------------------------------------------------
+
+    if not display_phone_number:
+
+        print(
+            "WhatsApp business number was not found."
+        )
+
+        return {
+            "status": "received",
+            "message": (
+                "WhatsApp business number "
+                "could not be identified."
+            ),
+        }
+
+    # --------------------------------------------------------
+    # Select assistant based on the business number.
+    # --------------------------------------------------------
+
+    selected_assistant = (
+        get_whatsapp_assistant(
+            display_phone_number
+        )
+    )
+
+    # --------------------------------------------------------
+    # SECURITY:
+    # Never guess an assistant if the WhatsApp number
+    # is not registered in our business-number map.
+    # --------------------------------------------------------
+
+    if not selected_assistant:
+
+        print(
+            "Unknown WhatsApp business number:",
+            display_phone_number,
+        )
+
+        return {
+            "status": "ignored",
+            "message": (
+                "WhatsApp number is not registered "
+                "with an assistant."
+            ),
+        }
+
+    print(
+        "WhatsApp business number:",
+        display_phone_number,
+    )
+
+    print(
+        "WhatsApp phone number ID:",
+        phone_number_id,
+    )
+
+    print(
+        "Customer WhatsApp number:",
+        sender_phone,
+    )
+
+    print(
+        "Selected assistant:",
+        selected_assistant,
+    )
 
     # --------------------------------------------------------
     # Handle unsupported message types.
@@ -576,6 +792,7 @@ async def whatsapp_webhook(
                 "Sorry, I can currently "
                 "understand text messages only."
             ),
+            phone_number_id,
         )
 
         return {
@@ -583,12 +800,8 @@ async def whatsapp_webhook(
             "message": (
                 "Unsupported message type."
             ),
+            "assistant": selected_assistant,
         }
-
-    print(
-        "WhatsApp sender:",
-        sender_phone,
-    )
 
     print(
         "WhatsApp message:",
@@ -596,23 +809,7 @@ async def whatsapp_webhook(
     )
 
     # --------------------------------------------------------
-    # Select the WhatsApp assistant.
-    # --------------------------------------------------------
-
-    selected_assistant = normalize_assistant(
-        WHATSAPP_ASSISTANT
-    )
-
-    if not selected_assistant:
-        selected_assistant = "venus"
-
-    print(
-        "WhatsApp assistant:",
-        selected_assistant,
-    )
-
-    # --------------------------------------------------------
-    # Send the WhatsApp message to the AI.
+    # Send the message ONLY to the selected assistant.
     # --------------------------------------------------------
 
     try:
@@ -642,12 +839,14 @@ async def whatsapp_webhook(
     )
 
     # --------------------------------------------------------
-    # Send AI answer back to WhatsApp.
+    # Send the AI answer back through the SAME
+    # WhatsApp business number.
     # --------------------------------------------------------
 
     sent = send_whatsapp_message(
         sender_phone,
         answer,
+        phone_number_id,
     )
 
     if sent:
@@ -665,5 +864,6 @@ async def whatsapp_webhook(
     return {
         "status": "received",
         "assistant": selected_assistant,
+        "business_number": display_phone_number,
         "reply_sent": sent,
     }
