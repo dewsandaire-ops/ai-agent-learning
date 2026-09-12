@@ -1,36 +1,42 @@
-# ruff: noqa: I001
 import os
 
 from dotenv import load_dotenv
-from fastapi import FastAPI, Request
+from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from openai import OpenAI
 from pydantic import BaseModel
 
-from agent.brain import ask_ai
+from brain import ask_ai, create_client
 
 
 # ============================================================
-# ENVIRONMENT
+# LOAD ENVIRONMENT VARIABLES
 # ============================================================
 
 load_dotenv()
 
-api_key = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
 
-if not api_key:
-    raise RuntimeError("OPENAI_API_KEY is not set.")
-
-client = OpenAI(api_key=api_key)
+if not OPENAI_API_KEY:
+    raise RuntimeError(
+        "OPENAI_API_KEY is not set. "
+        "Please check your .env file."
+    )
 
 
 # ============================================================
-# FASTAPI APP
+# CREATE OPENAI CLIENT
+# ============================================================
+
+client = create_client(OPENAI_API_KEY)
+
+
+# ============================================================
+# FASTAPI APPLICATION
 # ============================================================
 
 app = FastAPI(
-    title="Business AI Assistant System",
-    version="1.0.0",
+    title="Verified Agents and Homes AI",
+    description="AI system for four business assistants.",
 )
 
 
@@ -48,158 +54,92 @@ app.add_middleware(
 
 
 # ============================================================
-# WEBSITE REQUEST MODEL
+# CHAT REQUEST
 # ============================================================
 
 class ChatRequest(BaseModel):
+    assistant: str = "venus"
     message: str
-    assistant: str | None = None
 
 
 # ============================================================
-# WEBSITE ASSISTANT ROUTING
-# ============================================================
-
-WEBSITE_ASSISTANTS = {
-    "verifiedagentsandhomes.com": "venus",
-    "www.verifiedagentsandhomes.com": "venus",
-
-    "dewsandaire.com": "dews",
-    "www.dewsandaire.com": "dews",
-
-    "jahzempiresuites.com": "jahz",
-    "www.jahzempiresuites.com": "jahz",
-
-    "lagosmovesmart.com": "movesmart",
-    "www.lagosmovesmart.com": "movesmart",
-}
-
-
-def get_assistant_from_website(request: Request):
-    """
-    Identify the correct assistant from the website domain
-    that sent the chatbot request.
-    """
-
-    origin = request.headers.get("origin", "")
-    referer = request.headers.get("referer", "")
-
-    website_source = origin or referer
-
-    if not website_source:
-        return None
-
-    website_source = (
-        website_source
-        .lower()
-        .replace("https://", "")
-        .replace("http://", "")
-        .split("/")[0]
-        .split(":")[0]
-    )
-
-    return WEBSITE_ASSISTANTS.get(website_source)
-
-
-def normalize_assistant(assistant):
-    """
-    Normalize assistant names and display names.
-    """
-
-    if not assistant:
-        return None
-
-    assistant = str(assistant).strip().lower()
-
-    if assistant == "you":
-        return "movesmart"
-
-    if assistant in {
-        "venus",
-        "dews",
-        "jahz",
-        "movesmart",
-    }:
-        return assistant
-
-    return None
-
-
-# ============================================================
-# HOME ROUTE
+# HOME / STATUS
 # ============================================================
 
 @app.get("/")
 def home():
     return {
         "status": "online",
-        "message": "Business AI Assistant System is running.",
+        "message": "AI Agent system is running.",
+        "assistants": [
+            "venus",
+            "dews",
+            "jahz",
+            "movesmart",
+        ],
     }
 
 
 # ============================================================
-# HEALTH CHECK ROUTE
-# ============================================================
-
-@app.get("/health")
-def health():
-    return {
-        "status": "healthy",
-        "service": "Business AI Assistant System",
-    }
-
-
-# ============================================================
-# CHAT ROUTE
+# CHAT ENDPOINT
 # ============================================================
 
 @app.post("/chat")
-def chat(request_data: ChatRequest, request: Request):
+def chat(request: ChatRequest):
 
-    # --------------------------------------------------------
-    # First priority:
-    # identify the assistant from the website domain.
-    # --------------------------------------------------------
+    assistant = str(
+        request.assistant or "venus"
+    ).strip().lower()
 
-    website_assistant = get_assistant_from_website(request)
+    message = str(
+        request.message or ""
+    ).strip()
 
-    # --------------------------------------------------------
-    # Second priority:
-    # use the assistant sent directly by the website/API.
-    # --------------------------------------------------------
+    # Allow "you" as the Lagos MoveSmart assistant.
+    if assistant == "you":
+        assistant = "movesmart"
 
-    requested_assistant = normalize_assistant(
-        request_data.assistant
-    )
+    # Prevent empty messages.
+    if not message:
+        return {
+            "answer": "Please enter a message."
+        }
 
-    # --------------------------------------------------------
-    # Select the correct assistant.
-    # --------------------------------------------------------
-
-    if website_assistant:
-        selected_assistant = website_assistant
-
-    elif requested_assistant:
-        selected_assistant = requested_assistant
-
-    else:
-        selected_assistant = "venus"
-
-    # --------------------------------------------------------
-    # Send the message to the selected assistant.
-    # --------------------------------------------------------
-
-    answer = ask_ai(
-        client,
-        request_data.message,
-        selected_assistant,
-    )
-
-    # --------------------------------------------------------
-    # Return the answer and selected assistant.
-    # --------------------------------------------------------
-
-    return {
-        "answer": answer,
-        "assistant": selected_assistant,
+    # Allow only the four assistants.
+    allowed_assistants = {
+        "venus",
+        "dews",
+        "jahz",
+        "movesmart",
     }
+
+    if assistant not in allowed_assistants:
+        return {
+            "answer": (
+                "The selected AI assistant is not available."
+            )
+        }
+
+    try:
+
+        answer = ask_ai(
+            client,
+            message,
+            assistant=assistant,
+        )
+
+        return {
+            "assistant": assistant,
+            "answer": answer,
+        }
+
+    except Exception as error:  # noqa: BLE001
+
+        print("CHAT ERROR:", error)
+
+        return {
+            "answer": (
+                "I'm sorry, I ran into a problem "
+                "while processing your request."
+            )
+        }
