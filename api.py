@@ -1,6 +1,9 @@
 # ruff: noqa: I001
 
+import json
 import os
+import urllib.error
+import urllib.request
 
 from dotenv import load_dotenv
 from fastapi import FastAPI, Request
@@ -39,6 +42,14 @@ WHATSAPP_ACCESS_TOKEN = os.getenv(
 
 WHATSAPP_PHONE_NUMBER_ID = os.getenv(
     "WHATSAPP_PHONE_NUMBER_ID"
+)
+
+# The WhatsApp number initially uses Venus.
+# We can later add a menu so customers can choose
+# between Venus, Dews, Jahz, and MoveSmart.
+WHATSAPP_ASSISTANT = os.getenv(
+    "WHATSAPP_ASSISTANT",
+    "venus",
 )
 
 
@@ -252,9 +263,11 @@ async def verify_whatsapp_webhook(
     params = request.query_params
 
     mode = params.get("hub.mode")
+
     verify_token = params.get(
         "hub.verify_token"
     )
+
     challenge = params.get(
         "hub.challenge"
     )
@@ -274,6 +287,209 @@ async def verify_whatsapp_webhook(
 
 
 # ============================================================
+# SEND MESSAGE TO WHATSAPP
+# ============================================================
+
+def send_whatsapp_message(
+    recipient_phone,
+    message,
+):
+    """
+    Send an outgoing WhatsApp text message through
+    the Meta WhatsApp Cloud API.
+    """
+
+    if not WHATSAPP_ACCESS_TOKEN:
+        print(
+            "WHATSAPP_ACCESS_TOKEN is not configured."
+        )
+        return False
+
+    if not WHATSAPP_PHONE_NUMBER_ID:
+        print(
+            "WHATSAPP_PHONE_NUMBER_ID is not configured."
+        )
+        return False
+
+    url = (
+        "https://graph.facebook.com/v26.0/"
+        f"{WHATSAPP_PHONE_NUMBER_ID}/messages"
+    )
+
+    payload = {
+        "messaging_product": "whatsapp",
+        "recipient_type": "individual",
+        "to": recipient_phone,
+        "type": "text",
+        "text": {
+            "preview_url": False,
+            "body": message,
+        },
+    }
+
+    data = json.dumps(payload).encode(
+        "utf-8"
+    )
+
+    request = urllib.request.Request(
+        url,
+        data=data,
+        method="POST",
+        headers={
+            "Authorization": (
+                "Bearer "
+                f"{WHATSAPP_ACCESS_TOKEN}"
+            ),
+            "Content-Type": "application/json",
+        },
+    )
+
+    try:
+        with urllib.request.urlopen(
+            request,
+            timeout=30,
+        ) as response:
+
+            response_body = response.read().decode(
+                "utf-8"
+            )
+
+            print(
+                "WhatsApp send response:",
+                response_body,
+            )
+
+            return True
+
+    except urllib.error.HTTPError as error:
+
+        error_body = error.read().decode(
+            "utf-8",
+            errors="replace",
+        )
+
+        print(
+            "WhatsApp API error:",
+            error.code,
+            error_body,
+        )
+
+        return False
+
+    except Exception as error:
+
+        print(
+            "WhatsApp send error:",
+            error,
+        )
+
+        return False
+
+
+# ============================================================
+# EXTRACT WHATSAPP TEXT MESSAGE
+# ============================================================
+
+def extract_whatsapp_message(data):
+    """
+    Extract the sender's WhatsApp number and text message
+    from a Meta webhook payload.
+
+    Returns:
+
+        (sender_phone, message_text)
+
+    or:
+
+        (None, None)
+    """
+
+    try:
+        entries = data.get(
+            "entry",
+            [],
+        )
+
+        for entry in entries:
+
+            changes = entry.get(
+                "changes",
+                [],
+            )
+
+            for change in changes:
+
+                value = change.get(
+                    "value",
+                    {},
+                )
+
+                messages = value.get(
+                    "messages",
+                    [],
+                )
+
+                if not messages:
+                    continue
+
+                message = messages[0]
+
+                sender_phone = message.get(
+                    "from"
+                )
+
+                message_type = message.get(
+                    "type"
+                )
+
+                # ------------------------------------------------
+                # We currently respond only to text messages.
+                # ------------------------------------------------
+
+                if message_type == "text":
+
+                    text_data = message.get(
+                        "text",
+                        {},
+                    )
+
+                    message_text = text_data.get(
+                        "body"
+                    )
+
+                    if (
+                        sender_phone
+                        and message_text
+                    ):
+                        return (
+                            sender_phone,
+                            message_text,
+                        )
+
+                # ------------------------------------------------
+                # If the user sends an unsupported message type.
+                # ------------------------------------------------
+
+                if sender_phone:
+                    return (
+                        sender_phone,
+                        None,
+                    )
+
+    except Exception as error:
+
+        print(
+            "WhatsApp message extraction error:",
+            error,
+        )
+
+    return (
+        None,
+        None,
+    )
+
+
+# ============================================================
 # WHATSAPP WEBHOOK RECEIVER
 # ============================================================
 
@@ -284,24 +500,170 @@ async def whatsapp_webhook(
     """
     Receive incoming WhatsApp webhook events.
 
-    This route receives the WhatsApp message from Meta.
+    The flow is:
+
+    WhatsApp
+        ↓
+    Meta
+        ↓
+    /webhook
+        ↓
+    extract message
+        ↓
+    brain.py
+        ↓
+    selected AI assistant
+        ↓
+    Meta WhatsApp API
+        ↓
+    customer receives reply
     """
 
     try:
         data = await request.json()
 
     except Exception:
+
         return {
             "status": "invalid json"
         }
 
     print()
-    print("========================================")
-    print("WHATSAPP WEBHOOK RECEIVED")
-    print("========================================")
+    print(
+        "========================================"
+    )
+    print(
+        "WHATSAPP WEBHOOK RECEIVED"
+    )
+    print(
+        "========================================"
+    )
     print(data)
     print()
 
+    # --------------------------------------------------------
+    # Extract incoming WhatsApp message.
+    # --------------------------------------------------------
+
+    sender_phone, message_text = (
+        extract_whatsapp_message(data)
+    )
+
+    # --------------------------------------------------------
+    # Ignore webhook events that are not messages.
+    # --------------------------------------------------------
+
+    if not sender_phone:
+
+        return {
+            "status": "received",
+            "message": "No incoming message found.",
+        }
+
+    # --------------------------------------------------------
+    # Handle unsupported message types.
+    # --------------------------------------------------------
+
+    if not message_text:
+
+        print(
+            "Unsupported WhatsApp message type."
+        )
+
+        send_whatsapp_message(
+            sender_phone,
+            (
+                "Sorry, I can currently "
+                "understand text messages only."
+            ),
+        )
+
+        return {
+            "status": "received",
+            "message": (
+                "Unsupported message type."
+            ),
+        }
+
+    print(
+        "WhatsApp sender:",
+        sender_phone,
+    )
+
+    print(
+        "WhatsApp message:",
+        message_text,
+    )
+
+    # --------------------------------------------------------
+    # Select the WhatsApp assistant.
+    # --------------------------------------------------------
+
+    selected_assistant = normalize_assistant(
+        WHATSAPP_ASSISTANT
+    )
+
+    if not selected_assistant:
+        selected_assistant = "venus"
+
+    print(
+        "WhatsApp assistant:",
+        selected_assistant,
+    )
+
+    # --------------------------------------------------------
+    # Send the WhatsApp message to the AI.
+    # --------------------------------------------------------
+
+    try:
+
+        answer = ask_ai(
+            client,
+            message_text,
+            selected_assistant,
+        )
+
+    except Exception as error:
+
+        print(
+            "WhatsApp AI error:",
+            error,
+        )
+
+        answer = (
+            "I'm sorry, I encountered a problem "
+            "while processing your message. "
+            "Please try again."
+        )
+
+    print(
+        "AI answer:",
+        answer,
+    )
+
+    # --------------------------------------------------------
+    # Send AI answer back to WhatsApp.
+    # --------------------------------------------------------
+
+    sent = send_whatsapp_message(
+        sender_phone,
+        answer,
+    )
+
+    if sent:
+
+        print(
+            "WhatsApp reply sent successfully."
+        )
+
+    else:
+
+        print(
+            "WhatsApp reply could not be sent."
+        )
+
     return {
-        "status": "received"
+        "status": "received",
+        "assistant": selected_assistant,
+        "reply_sent": sent,
     }
