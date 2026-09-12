@@ -1,42 +1,54 @@
+# ruff: noqa: I001
+
 import os
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from openai import OpenAI
 from pydantic import BaseModel
 
-from brain import ask_ai, create_client
+from agent.brain import ask_ai
 
 
 # ============================================================
-# LOAD ENVIRONMENT VARIABLES
+# ENVIRONMENT
 # ============================================================
 
 load_dotenv()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+api_key = os.getenv("OPENAI_API_KEY")
 
-if not OPENAI_API_KEY:
-    raise RuntimeError(
-        "OPENAI_API_KEY is not set. "
-        "Please check your .env file."
-    )
+if not api_key:
+    raise RuntimeError("OPENAI_API_KEY is not set.")
 
-
-# ============================================================
-# CREATE OPENAI CLIENT
-# ============================================================
-
-client = create_client(OPENAI_API_KEY)
+client = OpenAI(api_key=api_key)
 
 
 # ============================================================
-# FASTAPI APPLICATION
+# WHATSAPP ENVIRONMENT
+# ============================================================
+
+WHATSAPP_VERIFY_TOKEN = os.getenv(
+    "WHATSAPP_VERIFY_TOKEN"
+)
+
+WHATSAPP_ACCESS_TOKEN = os.getenv(
+    "WHATSAPP_ACCESS_TOKEN"
+)
+
+WHATSAPP_PHONE_NUMBER_ID = os.getenv(
+    "WHATSAPP_PHONE_NUMBER_ID"
+)
+
+
+# ============================================================
+# FASTAPI APP
 # ============================================================
 
 app = FastAPI(
-    title="Verified Agents and Homes AI",
-    description="AI system for four business assistants.",
+    title="Business AI Assistant System",
+    version="1.0.0",
 )
 
 
@@ -54,92 +66,242 @@ app.add_middleware(
 
 
 # ============================================================
-# CHAT REQUEST
+# WEBSITE REQUEST MODEL
 # ============================================================
 
 class ChatRequest(BaseModel):
-    assistant: str = "venus"
     message: str
+    assistant: str | None = None
 
 
 # ============================================================
-# HOME / STATUS
+# WEBSITE ASSISTANT ROUTING
+# ============================================================
+
+WEBSITE_ASSISTANTS = {
+    "verifiedagentsandhomes.com": "venus",
+    "www.verifiedagentsandhomes.com": "venus",
+
+    "dewsandaire.com": "dews",
+    "www.dewsandaire.com": "dews",
+
+    "jahzempiresuites.com": "jahz",
+    "www.jahzempiresuites.com": "jahz",
+
+    "lagosmovesmart.com": "movesmart",
+    "www.lagosmovesmart.com": "movesmart",
+}
+
+
+def get_assistant_from_website(request: Request):
+    """
+    Identify the correct assistant from the website domain
+    that sent the chatbot request.
+    """
+
+    origin = request.headers.get("origin", "")
+    referer = request.headers.get("referer", "")
+
+    website_source = origin or referer
+
+    if not website_source:
+        return None
+
+    website_source = (
+        website_source
+        .lower()
+        .replace("https://", "")
+        .replace("http://", "")
+        .split("/")[0]
+        .split(":")[0]
+    )
+
+    return WEBSITE_ASSISTANTS.get(
+        website_source
+    )
+
+
+def normalize_assistant(assistant):
+    """
+    Normalize assistant names and display names.
+    """
+
+    if not assistant:
+        return None
+
+    assistant = str(assistant).strip().lower()
+
+    if assistant == "you":
+        return "movesmart"
+
+    if assistant in {
+        "venus",
+        "dews",
+        "jahz",
+        "movesmart",
+    }:
+        return assistant
+
+    return None
+
+
+# ============================================================
+# HOME ROUTE
 # ============================================================
 
 @app.get("/")
 def home():
     return {
         "status": "online",
-        "message": "AI Agent system is running.",
+        "message": "Business AI Assistant System is running.",
         "assistants": [
             "venus",
             "dews",
             "jahz",
             "movesmart",
         ],
+        "whatsapp_webhook": "/webhook",
     }
 
 
 # ============================================================
-# CHAT ENDPOINT
+# HEALTH CHECK ROUTE
+# ============================================================
+
+@app.get("/health")
+def health():
+    return {
+        "status": "healthy",
+        "service": "Business AI Assistant System",
+    }
+
+
+# ============================================================
+# WEBSITE CHAT ROUTE
 # ============================================================
 
 @app.post("/chat")
-def chat(request: ChatRequest):
+def chat(
+    request_data: ChatRequest,
+    request: Request,
+):
 
-    assistant = str(
-        request.assistant or "venus"
-    ).strip().lower()
+    # --------------------------------------------------------
+    # First priority:
+    # identify the assistant from the website domain.
+    # --------------------------------------------------------
 
-    message = str(
-        request.message or ""
-    ).strip()
+    website_assistant = get_assistant_from_website(
+        request
+    )
 
-    # Allow "you" as the Lagos MoveSmart assistant.
-    if assistant == "you":
-        assistant = "movesmart"
+    # --------------------------------------------------------
+    # Second priority:
+    # use the assistant sent directly by the website/API.
+    # --------------------------------------------------------
 
-    # Prevent empty messages.
-    if not message:
-        return {
-            "answer": "Please enter a message."
-        }
+    requested_assistant = normalize_assistant(
+        request_data.assistant
+    )
 
-    # Allow only the four assistants.
-    allowed_assistants = {
-        "venus",
-        "dews",
-        "jahz",
-        "movesmart",
+    # --------------------------------------------------------
+    # Select the correct assistant.
+    # --------------------------------------------------------
+
+    if website_assistant:
+        selected_assistant = website_assistant
+
+    elif requested_assistant:
+        selected_assistant = requested_assistant
+
+    else:
+        selected_assistant = "venus"
+
+    # --------------------------------------------------------
+    # Send the message to the selected assistant.
+    # --------------------------------------------------------
+
+    answer = ask_ai(
+        client,
+        request_data.message,
+        selected_assistant,
+    )
+
+    # --------------------------------------------------------
+    # Return the answer and selected assistant.
+    # --------------------------------------------------------
+
+    return {
+        "answer": answer,
+        "assistant": selected_assistant,
     }
 
-    if assistant not in allowed_assistants:
-        return {
-            "answer": (
-                "The selected AI assistant is not available."
-            )
-        }
+
+# ============================================================
+# WHATSAPP WEBHOOK VERIFICATION
+# ============================================================
+
+@app.get("/webhook")
+async def verify_whatsapp_webhook(
+    request: Request,
+):
+    """
+    Meta uses this GET request to verify the webhook.
+    """
+
+    params = request.query_params
+
+    mode = params.get("hub.mode")
+    verify_token = params.get(
+        "hub.verify_token"
+    )
+    challenge = params.get(
+        "hub.challenge"
+    )
+
+    if (
+        mode == "subscribe"
+        and verify_token
+        and challenge
+        and WHATSAPP_VERIFY_TOKEN
+        and verify_token == WHATSAPP_VERIFY_TOKEN
+    ):
+        return int(challenge)
+
+    return {
+        "status": "verification failed"
+    }
+
+
+# ============================================================
+# WHATSAPP WEBHOOK RECEIVER
+# ============================================================
+
+@app.post("/webhook")
+async def whatsapp_webhook(
+    request: Request,
+):
+    """
+    Receive incoming WhatsApp webhook events.
+
+    This route receives the WhatsApp message from Meta.
+    """
 
     try:
+        data = await request.json()
 
-        answer = ask_ai(
-            client,
-            message,
-            assistant=assistant,
-        )
-
+    except Exception:
         return {
-            "assistant": assistant,
-            "answer": answer,
+            "status": "invalid json"
         }
 
-    except Exception as error:  # noqa: BLE001
+    print()
+    print("========================================")
+    print("WHATSAPP WEBHOOK RECEIVED")
+    print("========================================")
+    print(data)
+    print()
 
-        print("CHAT ERROR:", error)
-
-        return {
-            "answer": (
-                "I'm sorry, I ran into a problem "
-                "while processing your request."
-            )
-        }
+    return {
+        "status": "received"
+    }
