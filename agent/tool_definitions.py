@@ -682,6 +682,7 @@ TOOLS = [
     # ============================================================
     # JAHZ EMPIRE HOTEL & SUITES
     # ============================================================
+
     {
         "type": "function",
         "name": "get_jahz_hotel_information",
@@ -744,6 +745,55 @@ TOOLS = [
                 },
             },
             "required": ["service"],
+            "additionalProperties": False,
+        },
+    },
+    {
+        "type": "function",
+        "name": "get_jahz_hotel_payment_policy",
+        "description": (
+            "Provide the official JAHZ Empire Hotel & Suites payment and payment-safety policy. "
+            "Use this whenever a customer asks about payment methods, cash payments, where to pay, "
+            "whether they can pay a staff member or third party, or how to safely make payment. "
+            "JAHZ Empire Suites & Resort does NOT accept cash payments. All payments must be made "
+            "only into the official JAHZ Empire Suites & Resort account using payment details provided "
+            "or confirmed by the hotel. Customers must NOT send money to personal accounts or unverified "
+            "third parties. Never invent bank account numbers, account names, or other payment details."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {},
+            "additionalProperties": False,
+        },
+    },
+    {
+        "type": "function",
+        "name": "search_hotel_faq",
+        "description": (
+            "Search the official JAHZ Empire Hotel & Suites FAQ information and return the "
+            "most relevant answer to the customer's question. Use this tool for detailed hotel "
+            "questions that are not limited to the basic hotel address, room categories, or service list. "
+            "This includes questions about reservations, check-in and check-out, payments, rooms, "
+            "facilities, events, families, safety, hotel location, nearby landmarks, airport proximity, "
+            "Murtala Muhammed International Airport, Novare Mall, LUFASI Nature Park, recreational centres, "
+            "beaches, Lekki Conservation Centre, Giwa Gardens, restaurants, shopping centres, tourist "
+            "attractions, roads, and other JAHZ hotel FAQ questions. "
+            "For location-related questions, use this tool instead of guessing or saying that the "
+            "information is unavailable."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "query": {
+                    "type": "string",
+                    "description": (
+                        "The customer's JAHZ Empire Hotel & Suites question, including location, "
+                        "airport, nearby attraction, reservation, room, facility, payment, event, "
+                        "or other hotel FAQ question."
+                    ),
+                },
+            },
+            "required": ["query"],
             "additionalProperties": False,
         },
     },
@@ -944,6 +994,8 @@ TOOLS = [
         },
     },
 ]
+
+
 # ============================================================
 # TOOLS AVAILABLE TO EACH ASSISTANT
 # ============================================================
@@ -957,6 +1009,8 @@ VENUS_TOOL_NAMES = {
     "read_notes",
     "delete_note",
     "list_tools",
+
+    # Verified Agents and Homes
     "get_company_information",
     "get_company_services",
     "get_company_mission",
@@ -964,6 +1018,8 @@ VENUS_TOOL_NAMES = {
     "get_company_values",
     "get_company_story",
     "get_company_commitment",
+
+    # Property
     "search_property",
     "verify_property",
     "search_property_documents",
@@ -973,11 +1029,15 @@ VENUS_TOOL_NAMES = {
     "search_house_documents",
     "verify_house_documents",
     "search_location",
+
+    # Short-let
     "verify_shortlet_address",
     "verify_shortlet_owner",
     "verify_shortlet_manager",
     "get_shortlet_current_look",
     "get_shortlet_reports",
+
+    # Agents
     "search_agent",
     "search_agent_by_name",
     "verify_agent",
@@ -985,10 +1045,13 @@ VENUS_TOOL_NAMES = {
     "verify_agent_documents",
     "get_agent_monthly_update",
     "get_agent_reports",
+
+    # VAH verification
     "get_vah_verification_number",
     "get_verification_statuses",
     "get_payment_safety_guidance",
 }
+
 
 DEWS_TOOL_NAMES = {
     "calculator",
@@ -999,11 +1062,13 @@ DEWS_TOOL_NAMES = {
     "read_notes",
     "delete_note",
     "list_tools",
+
     "get_dews_aire_services",
     "get_dews_aire_service",
     "recommend_dews_aire_service",
     "create_dews_aire_enquiry",
 }
+
 
 JAHZ_TOOL_NAMES = {
     "calculator",
@@ -1020,9 +1085,16 @@ JAHZ_TOOL_NAMES = {
     "get_jahz_room_categories",
     "get_jahz_hotel_services",
     "get_jahz_hotel_service",
+    "get_jahz_hotel_payment_policy",
+
+    # IMPORTANT:
+    # This allows the AI to search the full JAHZ FAQ database.
+    "search_hotel_faq",
+
     "recommend_jahz_hotel_service",
     "create_jahz_hotel_enquiry",
 }
+
 
 MOVESMART_TOOL_NAMES = {
     "calculator",
@@ -1033,6 +1105,7 @@ MOVESMART_TOOL_NAMES = {
     "read_notes",
     "delete_note",
     "list_tools",
+
     "get_movesmart_categories",
     "get_movesmart_category",
     "recommend_movesmart_category",
@@ -1043,6 +1116,10 @@ MOVESMART_TOOL_NAMES = {
     "create_movesmart_followup",
 }
 
+
+# ============================================================
+# TOOL SELECTION
+# ============================================================
 
 def _select_tools(tool_names):
     """Return complete tool definitions matching the supplied names."""
